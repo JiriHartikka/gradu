@@ -1,0 +1,1 @@
+../template/tktltiki2.cls
