@@ -126,32 +126,32 @@
 
 Tutkielmani aiheena on mobiililaitteiden energiankulutukseen liittyvien assosiaatiosääntöjen löytäminen tehokkaasti Carat-projektin datasta. Carat-data sisältää tietoa yli kahdeksansadantuhannen käyttäjän mobiililaitteiden energiankulutuksesta, käynnissä olevista mobiilisovelluksista sekä systeemiasetuksista. 
 
-Assosiaatioanalyysin tavoitteena on löytää mielenkiintoisia assosiaatioita Carat-käyttäjien mobiililaitteiden systeemiasetusten ja energiankulutksen väliltä. Osana tutkielmaa toteutetaan web-palvelinpohjainen hakukone, joka mahdollistaa assosiaatiosääntöjen generoimisen ja rajaamisen reaaliajassa käyttäjän antamien hakuehtojen (tietty sovellus, sekä joukko systeemiasetuksiin liittyviä kriteereitä) perusteella. Haku voi esimerkiksi kohdistua Facebook-mobiilisovellukseen, hakuehdolla $näytönkirkkaus=255$, jolloin hakukone rajaa hakuavaruuttaan annettujen kriteereiden mukaisesti.  
+Assosiaatioanalyysin tavoitteena on löytää mielenkiintoisia assosiaatioita Carat-käyttäjien mobiilisovellusten energiankulutkseen ja systeemiasetuksiin liittyen. Osana tutkielmaa toteutetaan web-palvelinpohjainen hakukone, joka mahdollistaa assosiaatiosääntöjen generoimisen ja rajaamisen käyttäjän antamien hakuehtojen (tietty sovellus, sekä joukko systeemiasetuksiin liittyviä kriteereitä) perusteella. Haku voi esimerkiksi kohdistua Facebook-mobiilisovellukseen, hakuehdolla $näytönkirkkaus=255$, jolloin hakukone rajaa hakuavaruuttaan annettujen kriteereiden mukaisesti ennen sääntöjen generoimista.  
 
 Keskeisiä tutkimuskysymyksiä ovat: 
 
 \begin{enumerate}
 	\item Miten assosiaatiosääntöjä voidaan generoida tehokkaasti ja skaalautuvasti reaaliajassa?
-	\item Miten datan diskretisoalgoritmin valinta vaikuttavaa generoituihin assosiaatiosääntöihin Carat-datan tapauksessa?
+	\item Miten numeeristen muuttujien diskretisointialgoritmin valinta vaikuttavaa generoituihin assosiaatiosääntöihin Carat-datan tapauksessa?
 	\item Miten valita kiinnostavat säännöt kaikkien generoitun sääntöjen joukosta Carat-datan tapauksessa? 
 \end{enumerate}
 
-Carat-datan suuri koko ja jatkuvan kasvu, sekä hakutoiminnalisuuden reaaliaikaisuus asettavat käytettävissä oleville metodoille korkeat suorituskykyvaatimukset. Tutkielmassani tarkastelen \textit{FP-growth} -algoritmin hajautettua toteutusta mahdollisena ratkaisuna ensimmäiseen yllä mainituista tutkimuskysymyksistä.  
+Carat-datan koko ja sen jatkuva kasvu, sekä hakutoiminnalisuuden reaaliaikaisuus asettavat käytettävissä oleville metodoille korkeat suorituskykyvaatimukset. Tutkielmassani tarkastelen erityisesti \textit{FP-growth} -algoritmin hajautettua toteutusta mahdollisena ratkaisuna ensimmäiseen yllä mainituista tutkimuskysymyksistä.
 
 \section*{Menetelmät ja Käsittelytapa}
 
-Tutkielma koostuu kirjallisuuskatsauksesta, sekä hakukoneen toteutuksen ja sen tulosten esittelystä ja evaluaatiosta.
+Tutkielma koostuu kirjallisuusanalyysista, sekä hakukoneen toteutuksen ja sen tulosten esittelystä ja evaluaatiosta.
 
-Kirjallisuuskatsauksessa käsitellään assosiaatioanalyysin teoriaa ja tutkimuksen nykytilaa sekä Carat-projektiin liittyvää tutkimusta, siltä osin kuin se liittyy tutkielman aihepiiriin.
+Kirjallisuusanalyysissa käsitellään assosiaatioanalyysin teoriaa ja tutkimuksen nykytilaa sekä Carat-projektiin liittyvää tutkimusta, siltä osin kuin se liittyy tutkielman aihepiiriin.
 
-Tutkielman arvioivassa osassa esitellään hakukoneen toteutuksessa käytetyt menetelmät ja teknologiat ja arvioidaan kuinka hyvin se ratkaisee yllä esitetyt tutkimuskysymykset.
+Tutkielman arvioivassa osassa esitellään hakukoneen ja toteutuksessa käytetyt menetelmät ja teknologiat ja arvioidaan kuinka hyvin se vastaa yllä esitettyihin tutkimuskysymyksiin.
 
 Tutkielman kielenä on englanti.    
 
 \section*{Keskeiset Lähteet}
 % Write some science here.
 
-Assosiaatioanalyysin peruskäsitteistö ja formaali määritelmä~\cite{Agrawal:1993:MAR:170036.170072}. FP-growth -algoritmi~\cite{Han:2000:MFP:335191.335372}. Hajautettu FP-growth -algoritmi~\cite{Li:2008:PPF:1454008.1454027}. Carat-projektin kuvaus~\cite{Oliner:2013:CCE:2517351.2517354}. Carat-datan kuvaus ja hahmotelma julkisesta Carat-API:sta~\cite{7840871}. Datan diskretisoiminen~\cite{Webb:2001:DAN:502512.502569,Lud2000}
+Assosiaatioanalyysin peruskäsitteistö ja formaali määritelmä~\cite{Agrawal:1993:MAR:170036.170072}. FP-growth -algoritmi~\cite{Han:2000:MFP:335191.335372}. Hajautettu FP-growth -algoritmi~\cite{Li:2008:PPF:1454008.1454027}. Carat-projektin kuvaus~\cite{Oliner:2013:CCE:2517351.2517354}. Carat-datan kuvaus ja hahmotelma julkisesta Carat-API:sta~\cite{7840871}. Datan diskretisoiminen assosiaatioanalyysissa~\cite{Webb:2001:DAN:502512.502569,Lud2000}.
 
 
 % --- References ---
