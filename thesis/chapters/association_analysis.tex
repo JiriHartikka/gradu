@@ -1,0 +1,28 @@
+\section{Association Analysis}
+
+Association rule mining is the task of finding associations between \textit{items} in a database of \textit{transactions}. The technique was originally developed in 1993 to identify patterns in consumers grocery purchasing behaviour. As an example, consider a database of following transactions denoting individual grocery purchases:
+ 
+\begin{center}
+    \begin{tabular}{ | l | l | }
+    \hline
+    \textbf{ID} & \textbf{Items} \\ \hline
+    1 & bread, butter, cheese, beer \\ \hline 
+    2 & diapers, beer, cookies \\ \hline 
+    3 & diapers, beer, bread \\ \hline 
+    4 & butter, bread, cheese \\ \hline 
+    \end{tabular}
+\end{center} 
+ 
+The aim of the association analysis is then to produce a list of association rules like 
+
+\begin{itemize}
+	\item $\left\{ bread, butter \right\} \Rightarrow \left\{ cheese \right\}$	
+	\item $\left\{ diapers \right\} \Rightarrow \left\{ beer \right\}$	
+\end{itemize} 
+
+A rule such as $\left\{ bread, butter \right\} \Rightarrow \left\{ cheese \right\}$	should be taken to mean "Presence of items \textit{bread} and \textit{butter} indicates the presence of item \textit{cheese}". 
+
+\subsection{Formal Definition}
+
+
+\subsection{FP-growth}
