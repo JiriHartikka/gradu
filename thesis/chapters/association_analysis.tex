@@ -1,28 +1,41 @@
 \section{Association Analysis}
 
-Association rule mining is the task of finding associations between \textit{items} in a database of \textit{transactions}. The technique was originally developed in 1993 to identify patterns in consumers grocery purchasing behaviour. As an example, consider a database of following transactions denoting individual grocery purchases:
+Association rule mining is the task of finding associations between \textit{items} in a database of \textit{transactions}. The technique was originally developed in 1993 to identify patterns in consumers grocery purchasing behaviour. Since then however, association analysis has found applications in wide variety of domains. As an example, consider a database of following transactions denoting individual grocery purchases:
  
 \begin{center}
     \begin{tabular}{ | l | l | }
     \hline
-    \textbf{ID} & \textbf{Items} \\ \hline
-    1 & bread, butter, cheese, beer \\ \hline 
-    2 & diapers, beer, cookies \\ \hline 
-    3 & diapers, beer, bread \\ \hline 
-    4 & butter, bread, cheese \\ \hline 
+    \textbf{Items} \\ \hline
+    bread, butter, cheese, beer \\ \hline 
+    diapers, beer, cookies \\ \hline 
+    diapers, beer, bread \\ \hline 
+    butter, bread, cheese \\ \hline 
     \end{tabular}
 \end{center} 
  
-The aim of the association analysis is then to produce a list of association rules like 
+The goal of the association analysis is then to produce a list of association rules, given a some measure of interestingness. From the database given above, some algorithm might produce the following association rules: 
 
 \begin{itemize}
 	\item $\left\{ bread, butter \right\} \Rightarrow \left\{ cheese \right\}$	
 	\item $\left\{ diapers \right\} \Rightarrow \left\{ beer \right\}$	
 \end{itemize} 
 
-A rule such as $\left\{ bread, butter \right\} \Rightarrow \left\{ cheese \right\}$	should be taken to mean "Presence of items \textit{bread} and \textit{butter} indicates the presence of item \textit{cheese}". 
+A rule such as $\left\{ bread, butter \right\} \Rightarrow \left\{ cheese \right\}$	should be taken to mean "Presence of items \textit{bread} and \textit{butter} indicates the presence of item \textit{cheese}".
 
-\subsection{Formal Definition}
+\subsection{Formal Problem Definition}
+
+Let $I = \left\{ x_1, x_2, ..., x_n \right\}$ be a set of binary variables called items. A transaction database $T$ is then a multiset of subsets of $I$, where each element of $T$ denotes a transaction. To state the exact problem of association rule discovery, concepts of support and confidence need to be introduced.
+
+Support of an item set $X$ in database $T$ is fraction of all transactions in $T$ that contain the item set 
+
+\[ supp(X) = \dfrac{ \vert \left\{ X' \in T  \mid X \subseteq X'  \right\}  \vert }{ \vert T \vert  } \]
+
+Confidence of a rule $X \Rightarrow Y$, where $X$ and $Y$ are item sets of $T$ is fraction of transactions in $T$ that contain the item set $X$ which also contain $Y$.
+
+\[conf( X \Rightarrow Y) = \dfrac{ supp( X \bigcup Y ) }{ supp(X) } \]
+
+The problem of association rule discovery can now be formalized as follows: Given a transaction database $T$, minimum support level $s$, where $ 0 \leq s \leq 1 $ and minimum confidence level $c$, where $ 0 \leq c \leq 1 $, find all rules $X \Rightarrow Y$ where $conf( X \Rightarrow Y ) \geq c$, $supp(X) \geq s$ and $supp(Y) \geq s$. 
+
 
 
 \subsection{FP-growth}
