@@ -1,41 +1,107 @@
 \section{Association Analysis}
 
-Association rule mining is the task of finding associations between \textit{items} in a database of \textit{transactions}. The technique was originally developed in 1993 to identify patterns in consumers grocery purchasing behaviour. Since then however, association analysis has found applications in wide variety of domains. As an example, consider a database of following transactions denoting individual grocery purchases:
- 
-\begin{center}
-    \begin{tabular}{ | l | l | }
+Association rule mining is the task of finding associations between \textit{items} in a database of \textit{transactions}. The technique was originally developed in 1993 to identify patterns in consumers grocery purchasing behaviour. Since then however, association analysis has found applications in wide variety of domains.
+
+Let us consider a hypothetical dataset shown in table~\ref{table:raw-data}. The dataset consists of mobile device system settings and energy usage measurements. The dataset has three continuous valued variables:  energyRate, the rate at which the battery is discharging;  CPULevel, the device's CPU usage level and screenBrightness, the brightness of the device's screen. Each of these variables takes floating point values ranging from 0 to 1.
+\begin{table}[htb]
+    \begin{tabular}{ | l | l | l | }
     \hline
-    \textbf{Items} \\ \hline
-    bread, butter, cheese, beer \\ \hline 
-    diapers, beer, cookies \\ \hline 
-    diapers, beer, bread \\ \hline 
-    butter, bread, cheese \\ \hline 
+    \textbf{energyRate} & \textbf{CPULevel} & \textbf{screenBrightness} \\ \hline
+    0.21 & 0.58 & 0.30 \\ \hline 
+    0.80 & 0.46 & 0.61 \\ \hline 
+    0.76 & 0.65 & 0.93 \\ \hline 
+    0.58 & 0.99 & 0.54 \\ \hline 
     \end{tabular}
-\end{center} 
+	\caption{Hypothetical mobile device measurements inspired by Carat dataset}
+	\label{table:raw-data}
+\end{table}
+
+Since association rule mining requires each variable of the database to be binary valued, a discretization of the variables must be performed. To discretize a continuously valued variable, we need to replace the continuous variable with multiple binary valued variables, each corresponding to an interval or cluster of values of the continuous variable. The details of discretization are discussed in chapter ???. For now, let us consider a naive discretization strategy, where each continuous variable is split to two binary variables by creating two bins at cut point 0.5. Table~\ref{table:discreteData} demonstrates this idea.
+
+\begin{table}[htb]
+    \begin{tabular}{ | l | l | l | l | l | l | }
+    \hline
+    \textbf{energy=low} & \textbf{energy=high} & \textbf{CPU=low} & \textbf{CPU=high} & \textbf{screen=low} & \textbf{screen=high} \\ \hline
+    True & False & False & True & True & False \\ \hline 
+    False & True & True & False & False & True \\ \hline 
+    False & True & False & True & False & True \\ \hline 
+    False & True & False & True & False & True \\ \hline 
+    \end{tabular}
+	\caption{Hypothetical mobile device measurements after naive discretization}
+	\label{table:discreteData}
+\end{table}
+
+Since every group of variables that is created by discretization is mutually exclusive, a more concise notation for this dataset can be used, as shown in table~\ref{table:discreteDataConcise}.
+
+\begin{table}[htb]
+    \begin{tabular}{ | l | l | l |}
+    \hline
+	\textbf{energyRate} & \textbf{CPULevel} & \textbf{screenBrightness} \\ \hline
+    low & high & low  \\ \hline 
+    high & low & high \\ \hline 
+    high & high & high \\ \hline 
+    high & high & high \\ \hline 
+    \end{tabular}
+    \caption{Hypothetical mobile device measurements after discretization using concise notation}
+    \label{table:discreteDataConcise}
+\end{table} 
+
+%As an example, consider a hypothetical database of following transactions denoting individual mobile device system settings, extracted from the Carat data:
  
-The goal of the association analysis is then to produce a list of association rules, given a some measure of interestingness. From the database given above, some algorithm might produce the following association rules: 
+%\begin{center}
+%    \begin{tabular}{ | l | l | }
+%    \hline
+%    \textbf{Items} \\ \hline
+%    cpuLevel=high, energyRate=high \\ \hline 
+%    diapers, beer, cookies \\ \hline 
+%    diapers, beer, bread \\ \hline 
+%    butter, bread, cheese \\ \hline 
+%    \end{tabular}
+%\end{center} 
+ 
+%The goal of the association analysis is then to produce a list of association rules, given a some measure of interestingness. From the database given above, some algorithm might produce the following association rules: 
 
-\begin{itemize}
-	\item $\left\{ bread, butter \right\} \Rightarrow \left\{ cheese \right\}$	
-	\item $\left\{ diapers \right\} \Rightarrow \left\{ beer \right\}$	
-\end{itemize} 
+Having transformed the raw data to binary variables, the goal of the association analysis is then to produce a list of association rules, given some measure of interestingness. For the database given above, an association rule mining algorithm might find the following association rule 
 
-A rule such as $\left\{ bread, butter \right\} \Rightarrow \left\{ cheese \right\}$	should be taken to mean "Presence of items \textit{bread} and \textit{butter} indicates the presence of item \textit{cheese}".
+\[
+	\left\{ CPULevel=high, screenBrightness=high \right\} \Rightarrow \left\{ energyRate=high \right\}
+\]
+
+This rule implies that high CPU utilization together with high screen brightness associates with high level of battery consumption.
 
 \subsection{Formal Problem Definition}
 
-Let $I = \left\{ x_1, x_2, ..., x_n \right\}$ be a set of binary variables called items. A transaction database $T$ is then a multiset of subsets of $I$, where each element of $T$ denotes a transaction. To state the exact problem of association rule discovery, concepts of support and confidence need to be introduced.
+Let $I = \left\{ x_1, x_2, ..., x_n \right\}$ be a set of binary variables called items. A transaction database $T$ is then a multiset of subsets of $I$, where each element of $T$ denotes a transaction. To give the exact problem of association rule discovery, concepts of support and confidence need to be introduced.
 
-Support of an item set $X$ in database $T$ is fraction of all transactions in $T$ that contain the item set 
+Support of an item set $X$ in database $T$ is defined as the fraction of all transactions in $T$ that contain the item set~\cite{Hipp:2000:AAR:360402.360421}.
 
 \[ supp(X) = \dfrac{ \vert \left\{ X' \in T  \mid X \subseteq X'  \right\}  \vert }{ \vert T \vert  } \]
 
-Confidence of a rule $X \Rightarrow Y$, where $X$ and $Y$ are item sets of $T$ is fraction of transactions in $T$ that contain the item set $X$ which also contain $Y$.
+Confidence of a rule $X \Rightarrow Y$, where $X$ and $Y$ are item sets of $T$, is defined as the fraction of transactions in $T$ containing item set $X$ which also contain $Y$~\cite{Hipp:2000:AAR:360402.360421}.
 
 \[conf( X \Rightarrow Y) = \dfrac{ supp( X \bigcup Y ) }{ supp(X) } \]
 
-The problem of association rule discovery can now be formalized as follows: Given a transaction database $T$, minimum support level $s$, where $ 0 \leq s \leq 1 $ and minimum confidence level $c$, where $ 0 \leq c \leq 1 $, find all rules $X \Rightarrow Y$ where $conf( X \Rightarrow Y ) \geq c$, $supp(X) \geq s$ and $supp(Y) \geq s$. 
+The problem of association rule discovery can now be formalized the following way. Given a transaction database $T$, minimum support level $s$, where $ 0 \leq s \leq 1 $ and minimum confidence level $c$, where $ 0 \leq c \leq 1 $, find all rules $X \Rightarrow Y$ where $conf( X \Rightarrow Y ) \geq c$, $supp(X) \geq s$ and $supp(Y) \geq s$~\cite{Hipp:2000:AAR:360402.360421}. 
 
+The association rule discovery problem can be further divided into two distinct subproblems, namely frequent pattern mining problem and rule generation problem. A frequent pattern $P$ of database $T$ is a subset of $I$ such that $supp(P) \geq s$. The frequent pattern mining problem is the task of finding all frequent patterns from a given database. The rule generation problem on the other hand, is the task of generating all association rules with sufficient confidence from the frequent patterns. 
 
+\subsection{Frequent Pattern Mining Using Frequent Pattern Growth}
 
-\subsection{FP-growth}
+Frequent pattern growth is an efficient algorithm for the frequent pattern mining problem~\cite{Han:2000:MFP:335191.335372}. The algorithm utilizes a specialized data structure called FP-tree, a kind of prefix tree, to speed up the frequent pattern generation.  
+
+Let us go through the process of FP-tree generation for the transaction database with an example. First, each transaction will be ordered by frequency of its items in the database. Table~\ref{table:fp-growth-example1} shows the example transaction database as well as their frequency ordered counterparts. A single traversal over the database is required in order to sort the transactions.
+
+\begin{table}[htb]
+\begin{center}
+    \begin{tabular}{ | l | l | }
+    \hline
+	\textbf{Attributes} & \textbf{Frequency Ordered Attributes} \\ \hline
+    c=l, r=h, s=h, t=l & s=h, c=l, r=h, t=l  \\ \hline 
+    r=h, s=l & \\ \hline 
+    c=h, r=h, s=h & s=h \\ \hline 
+    c=l, r=l, s=h, t=h & s=h, c=l \\ \hline 
+    \end{tabular}
+    \caption{Hypothetical mobile device attributes. c stands for CPU usage, r for energy rate, s for screen brightness and t for device temperature. l and h denote low and high discretization categories respectively. }
+    \label{table:fp-growth-example1}
+\end{center}
+\end{table} 
