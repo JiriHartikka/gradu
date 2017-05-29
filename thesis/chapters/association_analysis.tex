@@ -83,25 +83,58 @@ Confidence of a rule $X \Rightarrow Y$, where $X$ and $Y$ are item sets of $T$, 
 
 The problem of association rule discovery can now be formalized the following way. Given a transaction database $T$, minimum support level $s$, where $ 0 \leq s \leq 1 $ and minimum confidence level $c$, where $ 0 \leq c \leq 1 $, find all rules $X \Rightarrow Y$ where $conf( X \Rightarrow Y ) \geq c$, $supp(X) \geq s$ and $supp(Y) \geq s$~\cite{Hipp:2000:AAR:360402.360421}. 
 
-The association rule discovery problem can be further divided into two distinct subproblems, namely frequent pattern mining problem and rule generation problem. A frequent pattern $P$ of database $T$ is a subset of $I$ such that $supp(P) \geq s$. The frequent pattern mining problem is the task of finding all frequent patterns from a given database. The rule generation problem on the other hand, is the task of generating all association rules with sufficient confidence from the frequent patterns. 
+The association rule discovery problem can be further divided into two distinct sub problems, namely frequent pattern mining problem and rule generation problem. A frequent pattern $P$ of database $T$ is a subset of $I$ such that $supp(P) \geq s$. The frequent pattern mining problem is the task of finding all frequent patterns from a given database. The rule generation problem on the other hand, is the task of generating all association rules with sufficient confidence from the frequent patterns. 
 
 \subsection{Frequent Pattern Mining Using Frequent Pattern Growth}
 
 Frequent pattern growth is an efficient algorithm for the frequent pattern mining problem~\cite{Han:2000:MFP:335191.335372}. The algorithm utilizes a specialized data structure called FP-tree, a kind of prefix tree, to speed up the frequent pattern generation.  
 
-Let us go through the process of FP-tree generation for the transaction database with an example. First, each transaction will be ordered by frequency of its items in the database. Table~\ref{table:fp-growth-example1} shows the example transaction database as well as their frequency ordered counterparts. A single traversal over the database is required in order to sort the transactions.
+Let us go through the process of building a FP-tree for a transaction database with an example. First step of building a FP-tree, is to sort each transaction by decreasing order of frequency of its items in the database. Infrequent items are also filtered out based on the minimum support. Table~\ref{table:fp-growth-example1} shows the example transaction database as well as the frequent items in descending order of frequency. A single traversal over the database is required in order to sort the transactions.
+
+For this example, let us consider a minimum support of 0.3. Since the number of transactions in our database is 6 and $ \frac{1}{6} < 0.3 < \frac{2}{6} $, all items with frequency less than 2 can be filtered out. Thus items i and j are not included in the frequency second column of table~\ref{table:fp-growth-example1}. 
 
 \begin{table}[htb]
 \begin{center}
     \begin{tabular}{ | l | l | }
     \hline
-	\textbf{Attributes} & \textbf{Frequency Ordered Attributes} \\ \hline
-    c=l, r=h, s=h, t=l & s=h, c=l, r=h, t=l  \\ \hline 
-    r=h, s=l & \\ \hline 
-    c=h, r=h, s=h & s=h \\ \hline 
-    c=l, r=l, s=h, t=h & s=h, c=l \\ \hline 
+	\textbf{Items} & \textbf{Frequency Ordered and Filtered Items} \\ \hline
+    a, b, c, d, e, h & c, e, h, a, b, d \\ \hline 
+    c, d, e, h & c, e, h, d \\ \hline 
+    c, e, h & c, e, h \\ \hline 
+    a, b, c, e, j & c, e, a, b \\ \hline 
+    c, h & c, h \\ \hline
+    d, i & d \\ \hline
     \end{tabular}
-    \caption{Hypothetical mobile device attributes. c stands for CPU usage, r for energy rate, s for screen brightness and t for device temperature. l and h denote low and high discretization categories respectively. }
+    \caption{Example transaction database for illustrating FP-tree generation.}
     \label{table:fp-growth-example1}
 \end{center}
 \end{table} 
+
+To construct the FP-tree we start with a node labled as "root". We then take the first transaction and walk over its elements in the frequency order. We start from the root node of the FP-tree, and since it has no child nodes, we add a child node labelled with "c" and set its count to 1. We then continue to walk from the node labelled with "c" and repeat the procedure for the remaining items of the transaction. The FP-tree after processing the first transaction is shown in figure~\ref{figure:fp-growth-example1}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.5]{fp-tree-example/fp-tree-p1.png}
+	\caption{FP-tree after processing the first transaction}
+	\label{figure:fp-growth-example1}
+\end{figure}
+
+Next, the second transaction is processed as follows. We again start at the root node and walk over all items in the second transaction. Since the root node has a child node labelled with "c" we simply increment its count to 2. We walk down the path $c \rightarrow e \rightarrow h$ incrementing the counts of these nodes. The next  item to process is "d" and we are at the node labelled with "h". Since the node does not have a child node labelled with "d", we add one and set its count to 1. Figure~\ref{figure:fp-growth-example2} shows the progress of building the FP-tree after processing the second transaction of the database.
+
+\begin{figure}[hbn]
+	\centering
+	\includegraphics[scale=0.5]{fp-tree-example/fp-tree-p2.png}
+	\caption{FP-tree after processing the second transaction}
+	\label{figure:fp-growth-example2}
+\end{figure}
+
+Repeating the same procedure for the rest of the transactions yields complete FP-tree as illustrated in figure~\ref{figure:fp-growth-example3}.
+
+\begin{figure}[hbn]
+	\centering
+	\includegraphics[scale=0.5]{fp-tree-example/fp-tree-p3.png}
+	\caption{Complete FP-tree}
+	\label{figure:fp-growth-example3}
+\end{figure}
+
+The dashed arrows in the FP-tree represent node links. The FP-tree maintains a table of linked lists for each distinctly named item. Whenever a node is added to the FP-tree a pointer to that node is added to the linked list corresponding to that nodes label. 
