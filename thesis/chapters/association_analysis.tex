@@ -87,11 +87,48 @@ The association rule discovery problem can be further divided into two distinct 
 
 \subsection{Frequent Pattern Mining Using Frequent Pattern Growth}
 
-Frequent pattern growth is an efficient algorithm for the frequent pattern mining problem~\cite{Han:2000:MFP:335191.335372}. The algorithm utilizes a specialized data structure called FP-tree, a kind of prefix tree, to speed up the frequent pattern generation.  
+Frequent pattern growth is an efficient algorithm for the frequent pattern mining problem~\cite{Han:2000:MFP:335191.335372}. The algorithm utilizes a specialized data structure called FP-tree, a kind of prefix tree, to speed up the frequent pattern generation. The FP-tree data structure consists of nodes, each of which have tree fields: item name, which tells what item the node represents; item count, which tells the number of transactions containing the item that can be reached by following the path of nodes leading to the node; and node link, which contains a pointer to the next node in the FP-tree with the same node name. An exception is the root node of the FP-tree, which does not have any of these fields, but only has links to child nodes. Algorithm~\ref{Algorithm:FP-tree} shows how to constructs a FP-tree for a transaction database~\cite{Han:2000:MFP:335191.335372}.
 
-Let us go through the process of building a FP-tree for a transaction database with an example. First step of building a FP-tree, is to sort each transaction by decreasing order of frequency of its items in the database. Infrequent items are also filtered out based on the minimum support. Table~\ref{table:fp-growth-example1} shows the example transaction database as well as the frequent items in descending order of frequency. A single traversal over the database is required in order to sort the transactions.
+\begin{algorithm}[h]
+	\SetAlgoLined\DontPrintSemicolon
+	\SetKwFunction{buildFPTree}{buildFPTree}\SetKwFunction{insertTree}{insertTree}
+	\KwData{A transaction database \textit{DB}, minimum support threshold \textit{s}}
+	\KwResult{FP-tree for the database}
+	\SetKwProg{myalg}{Algorithm}{}{}
+	\myalg{\buildFPTree{}}{
+		\nl	\textit{F} $\leftarrow$ Scan \textit{DB} and collect a map of items and their frequencies\;
+		\nl \textit{L} $\leftarrow$ Sort keys of \textit{F} in descending order of support filtering out items which have support < \textit{s}\;
+		\nl \textit{T} $\leftarrow$ root node of the FP-tree\;
+		\nl \For{ transaction \textit{Trans} \textbf{in} \textit{DB} }{ 
+			\nl sort \textit{Trans} according to \textit{L} and filter out infrequent items\;
+			\nl insertTree(\textit{Trans}, \textit{T})\;
+		}
+		\nl \KwRet{\textit{T}}\;
+	}
+	\setcounter{AlgoLine}{0}
+	\SetKwProg{myproc}{Procedure}{}{}
+  	\myproc{\insertTree{\textit{Trans}, \textit{T}}}{
+		\nl \If{\textit{Trans} is empty}{
+			\nl \KwRet\;
+		} \nl \Else{
+			\nl	\textit{N} $\leftarrow$ first item of \textit{Trans}\;
+			\nl \textit{tail} $\leftarrow$ tail of \textit{Trans}\;	
+			\nl \If{ \textit{T} has a child \textit{N} such that \textit{N}.item-name == \textit{h}.item-name} {
+				\nl \textit{N}.count += 1\;
+				\nl insertTree(\textit{tail}, \textit{N})
+			} \nl \Else {
+				\nl \textit{N} $\leftarrow$ create new node with item-name = \textit{p}.item-name and count = 1 and link \textit{T} as its parent\;
+				\nl insertTree(\textit{tail}, \textit{N})
+			}
+		}
+	}	
+	\caption{Fp-tree construction}
+	\label{Algorithm:FP-tree}
+\end{algorithm}  
 
-For this example, let us consider a minimum support of 0.3. Since the number of transactions in our database is 6 and $ \frac{1}{6} < 0.3 < \frac{2}{6} $, all items with frequency less than 2 can be filtered out. Thus items i and j are not included in the frequency second column of table~\ref{table:fp-growth-example1}. 
+Let us go through the process of building a FP-tree for an example transaction database. First step of building a FP-tree, is to sort each transaction by decreasing order of frequency of its items in the database. Infrequent items are also filtered out based on the minimum support. Table~\ref{table:fp-growth-example1} shows the example transaction database as well as the frequent items in descending order of frequency. A single traversal over the database is required in order to sort the transactions.
+
+For this example, let us consider a minimum support of 0.3. Since the number of transactions in our database is 6 and $ \frac{1}{6} < 0.3 < \frac{2}{6} $, all items with frequency less than 2 can be filtered out. Thus items i and j are not included in the second column of table~\ref{table:fp-growth-example1}. 
 
 \begin{table}[htb]
 \begin{center}
@@ -137,4 +174,4 @@ Repeating the same procedure for the rest of the transactions yields complete FP
 	\label{figure:fp-growth-example3}
 \end{figure}
 
-The dashed arrows in the FP-tree represent node links. The FP-tree maintains a table of linked lists for each distinctly named item. Whenever a node is added to the FP-tree a pointer to that node is added to the linked list corresponding to that nodes label. 
+The dashed arrows in the FP-tree represent node links. The FP-tree maintains a table of linked lists for each distinctly named item. Whenever a node is added to the FP-tree, a pointer to that node is also added to the linked list corresponding to that nodes label. 
