@@ -1,4 +1,4 @@
-\section{Association Analysis}
+\section{Association Analysis} \label{association analysis}
 
 Association rule mining is the task of finding associations between \textit{items} in a database of \textit{transactions}. The technique was originally developed in 1993 to identify patterns in consumers grocery purchasing behaviour. Since then however, association analysis has found applications in wide variety of domains.
 
@@ -158,7 +158,7 @@ To construct the FP-tree we start with a node labled as "root". We then take the
 
 Next, the second transaction is processed as follows. We again start at the root node and walk over all items in the second transaction. Since the root node has a child node labelled with "c" we simply increment its count to 2. We walk down the path $c \rightarrow e \rightarrow h$ incrementing the counts of these nodes. The next  item to process is "d" and we are at the node labelled with "h". Since the node does not have a child node labelled with "d", we add one and set its count to 1. Figure~\ref{figure:fp-growth-example2} shows the progress of building the FP-tree after processing the second transaction of the database.
 
-\begin{figure}[hbn]
+\begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.5]{fp-tree-example/fp-tree-p2.png}
 	\caption{FP-tree after processing the second transaction}
