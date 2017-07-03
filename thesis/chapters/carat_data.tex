@@ -1,1 +1,27 @@
 \section{Carat Data}
+
+The Carat data consists of samples containing mobile device system settings, current battery level, the list of currently running mobile applications and a user specific identification token unique to each Carat application installation. Each Carat application user periodically sends these samples to the Carat server, typically when the device's battery level changes~\cite{Oliner:2013:CCE:2517351.2517354}. 
+
+Since we are interested about the effects that the mobile devices system settings and state may have on the energy consumption rate of the device, the samples need to be converted in such a way that the energy rate becomes accessible. This was done by grouping all samples according to their user identification token. The grouped tokens were then sorted according to the time of the samples arrival time stamp. These sorted samples were then paired up so that the first sample and the second sample make up pair number 1, the second and the third sample make up sample pair number 2 and so forth. These sample pairs were used as the basis of this analysis. The energy rate of a sample pair was calculated as the difference of the samples' battery levels divided by the difference of their time stamps. The set of running applications for a sample pair was decided to be the union of both samples running applications. For all other system settings and state the more recent of the sample pairs was used to determine the state or setting of the sample pair.
+
+Let us give a brief description of each of the system settings and state variables that were used as part of the analysis.   
+
+\subsection{Energy Rate} 
+
+\subsection{CPU Usage Level}  
+
+\subsection{Travel Distance}  
+
+\subsection{Battery Temperature}  
+
+\subsection{Battery Voltage}  
+
+\subsection{Screen Brightness}  
+
+\subsection{Mobile Network Technology}  
+
+\subsection{Network Type}  
+
+\subsection{WiFi Signal Strength}
+
+\subsection{WiFi Connection Speed}  
