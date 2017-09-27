@@ -153,7 +153,7 @@ For this example, let us consider a minimum support of 0.3. Since the number of 
 \end{center}
 \end{table} 
 
-To construct the FP-tree we start with a node labelled as "root". We then take the first transaction and walk over its elements in the frequency order. We start from the root node of the FP-tree, and since it has no child nodes, we add a child node labelled with "c" and set its count to 1. We then continue to walk from the node labelled with "c" and repeat the procedure for the remaining items of the transaction. The FP-tree after processing the first transaction is shown in Figure~\ref{figure:fp-growth-example1}.
+To construct the FP-tree we start with a node labelled as "root". We then take the first transaction and walk over its elements in the frequency order. We start from the root node of the FP-tree. Since the roo node has no child nodes, we add a child node labelled with "c" and set its count to 1. We remove the item "c" from the transaction being handled. Then we continue the walk from the node labelled with "c". The procedure is repeated with the remaining items of the transaction, continuing the walk from the node labelled "c". The FP-tree after processing the first transaction is shown in Figure~\ref{figure:fp-growth-example1}.
 
 \begin{figure}[!htbp]
 	\centering
@@ -162,7 +162,7 @@ To construct the FP-tree we start with a node labelled as "root". We then take t
 	\label{figure:fp-growth-example1}
 \end{figure}
 
-Next, the second transaction is processed as follows. We again start at the root node and walk over all items in the second transaction. Since the root node has a child node labelled with "c" we simply increment its count to 2. We walk down the path $c \rightarrow e \rightarrow h$ incrementing the counts of these nodes. The next  item to process is "d" and we are at the node labelled with "h". Since the node does not have a child node labelled with "d", we add one and set its count to 1. Figure~\ref{figure:fp-growth-example2} shows the progress of building the FP-tree after processing the second transaction of the database.
+Next, the second transaction is processed as follows. We again start walking down FP-tree from the root node processing items in the second transaction. Since the root node has a child node labelled with "c" we increment its count to 2 and remove item "c" from the transaction being processed. Since the node has a child node labelled with "e" and our next item to be processed is "e", we move to the node labelled with "e" and increment its count by one and remove item "e" from the transaction being processed. The same process is applied to item "h" and the node labelled with "h". The next item to process is "d", but the node labelled with "h" does not have a child node labelled with "d". We therefore add a child node labelled with "d" and count 1 to the node labelled with "h". Figure~\ref{figure:fp-growth-example2} shows the progress after processing the second transaction of the database.
 
 \begin{figure}[!htbp]
 	\centering
@@ -180,4 +180,6 @@ Repeating the same procedure for the rest of the transactions yields complete FP
 	\label{figure:fp-growth-example3}
 \end{figure}
 
-The dashed arrows in the FP-tree represent node links. The FP-tree maintains a table of linked lists for each distinctly named item. Whenever a node is added to the FP-tree, a pointer to that node is also added to the linked list corresponding to that nodes label. 
+The dashed arrows in Figure~\ref{figure:fp-growth-example3} represent node links. The FP-tree maintains a table of linked lists for each distinctly named item. Whenever a node is added to the FP-tree, a pointer to that node is also added to the linked list corresponding to that nodes label.
+
+ 
