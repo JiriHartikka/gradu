@@ -23,7 +23,9 @@ The implementation consists of three main components. These are the front end we
 	\item Analysis engine sends generated association rules to the back end web server.
 	\item Back end server sends HTTP response containing the generated rules to the front end web server.
 	\item Front end server uses the association rules to generate a view for the client.  
-\end{enumerate}    
+\end{enumerate}
+
+Figure~\ref{figure:carat-api-network-prototype} shows the flow of control between the different components of the Carat API. The prototype only implements the frontend and the backend of the service. Implementing load balancing and authentication falls outside the scope of this thesis. Some implementation constraints of the authentication module are discussed in~\cite{7840871}.     
 
 \subsection{Service Front End}
 
