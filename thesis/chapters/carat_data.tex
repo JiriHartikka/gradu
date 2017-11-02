@@ -34,6 +34,8 @@ CPU usage level is the fraction of time that the central processing unit(s) of t
 
 Figure~\ref{figure:carat-data-cpu-level} shows a histogram of the CPU usage level distribution. The distribution very roughly approximates the uniform distribution except for 100\% and 0\% CPU usage levels, which are quite overrepresented. The data was discretized into four bins of equal frequency.
 
+One would assume that higher CPU usage levels lead to higher energy rates. 
+
 \subsection{Travel Distance}  
 
 Travel distance is the distance in meters, that the mobile device moved between the two samples. 
@@ -59,6 +61,8 @@ Battery temperature is the measured mobile device battery temperature in degrees
 \end{figure}  
 
 Figure~\ref{figure:carat-data-battery-temperature} shows a histogram of the battery temperature distribution. The distribution approximates a normal distribution with some skewedness. Notably, there is a small cluster of measurements near zero degrees Celsius. This is most likely due to mobile devices systematically reporting a value of zero if the measurement data is not available. The data was discretized into four bins of equal frequency.
+
+A straightforward hypothesis would be that a higher battery temperature leads to increased energy rate.
 
 \subsection{Battery Voltage}  
 
@@ -86,9 +90,11 @@ Screen brightness is system setting that takes integer values between -1 and 255
 
 Figure~\ref{figure:carat-data-screen-brightness} shows a histogram of the screen brightness values, where the values of -1 have been removed. The brightness values seem to roughly follow a uniform distribution, although very high screen brightness settings seem to be over represented. Approximately half of the samples had their brightness value at -1, indicating automatic brightness setting. Since the automatic setting is categorically different from all other brightness values, the brightness attribute was discretized in the following way: the value -1 formed it's own bin and the numerical values were divided to four bins of equal mass.   
 
+A very intuitive hypothesis would be that the screen brightness is a large factor in the overall energy rate of any mobile device.
+
 \subsection{Mobile Network Technology}  
 
-The mobile network technology is a system property that reports the name of the mobile technology that mobile device is using for its mobile data communication.
+The mobile network technology is a system property that reports the name of the mobile technology that mobile device is using for its mobile data communication. These 
 
 \begin{figure}[!htbp]
 	\centering
@@ -99,8 +105,48 @@ The mobile network technology is a system property that reports the name of the 
 
 Figure~\ref{figure:carat-data-mobile-net-type} shows a histogram of all mobile network types in the Carat data. Ambiguous categories of "16", "19", "30", "unknown", "null" and "18" were combined to a single bin labelled as "unknown".
 
+Intuitively, one would assume that older mobile network technologies such as \textit{gprs} would consume less battery life than newer technologies such as \textit{lte}, since the newer technologies achieve much greater data rates than the old technologies.
+
 \subsection{Network Type}  
+
+Network type is the system property that the is reported by the mobile device to indicate the type data connection. Typically this is either \textit{mobile} or \textit{wifi}, indicating the use of mobile networking or a wireless local area networking respectively. Some more exotic alternatives can however be found in the data, such as \textit{bluetooth tethering}, where the network access is enabled by bluetooth tunneling through another device.
+
+\begin{figure}[!htbp]
+	\centering
+	\includegraphics[width=\textwidth]{images/carat-data/network_type.png}
+	\caption{Histogram of network types in Carat data}
+	\label{figure:carat-data-net-type}
+\end{figure}   
+
+Figure~\ref{figure:carat-data-net-type} shows a histogram of all network types found in the Carat data. Values \textit{null} and \textit{unknown} were considered ambiguous and were combined under the label \textit{unknown}.
+ 
 
 \subsection{WiFi Signal Strength}
 
-\subsection{WiFi Connection Speed}  
+WiFi signal strength is a system property that the mobile device uses to signify the strength of the wireless local area network. WiFi connection strength is reported as an integer value in the range -100 to 0, where 0 signifies the strongest signal. Presumably, the WiFi signal strength is in units of decibels relative to milliwatt (dBm). The Android API seems to report a value of -127 when no reading is available. Values less than -100 were excluded from the data as these are very unlikely to be real measurements.
+
+ \begin{figure}[!htbp]
+	\centering
+	\includegraphics[width=\textwidth]{images/carat-data/wifi_signal_strength.png}
+	\caption{Histogram of WiFi signal strengths readings with 100 bins in Carat data}
+	\label{figure:carat-data-wifi-signal-strength}
+\end{figure} 
+
+Figure~\ref{figure:carat-data-wifi-signal-strength} shows a histogram of WiFi signal strengths in Carat data. The distribution seems to approximate a normal distribution reasonably well. 
+
+One hypothesis for the interactions between the signal strength and energy rate would be that lower signal strength leads to higher energy rate, as low signal strength s generally increase the noisiness of the connection, leading to increased data loss and retransmissions, which require extra battery life.
+
+\subsection{WiFi Connection Speed}
+
+WiFi Connection speed is a system property that the mobile device uses to report the current wireless local area network link speed. The link speed is presumably reported in units of mega bits per second (mbps). 
+
+A reasonable hypothesis for the WiFi connection speed - energy rate -interaction would be that higher speed is related to higher energy rate, since wireless communication is quite energy intensive. 
+
+ \begin{figure}[!htbp]
+	\centering
+	\includegraphics[width=\textwidth]{images/carat-data/wifi_speed.png}
+	\caption{Histogram of WiFi link speed with 100 bins in Carat data}
+	\label{figure:carat-data-wifi-speed}
+\end{figure}
+
+Figure~\ref{figure:carat-data-wifi-speed} shows a histogram of the WiFi speeds in the Carat data. 
