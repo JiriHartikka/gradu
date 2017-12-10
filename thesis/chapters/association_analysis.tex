@@ -182,4 +182,4 @@ Repeating the same procedure for the rest of the transactions yields complete FP
 
 The dashed arrows in Figure~\ref{figure:fp-growth-example3} represent node links. The FP-tree maintains a table of linked lists for each distinctly named item. Whenever a node is added to the FP-tree, a pointer to that node is also added to the linked list corresponding to that nodes label.
 
- 
+The way an FP-tree is constructed guarantees, that all FP-trees have the so called \textit{node-link property}~\cite{Hipp:2000:AAR:360402.360421}. What it means, is that for any frequent item, all frequent patterns containing that item can be constructed by following the item's node-links starting from the item's head in the FP-tree header.  
