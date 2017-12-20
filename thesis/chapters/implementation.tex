@@ -96,7 +96,90 @@ case class Sample(
 \end{lstlisting}
 \end{minipage}  
 
+The next step in the analysis work flow, is to discretize the variables of the data. All numerical variables were discretized to bins of equal mass, as explained in depth in chapter~\ref{carat data}. The following code snippet shows how to find the break points of the bins for continuously valued variables.
 
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=scala] 
+def getQuantiles(
+  data: RDD[Double],
+  buckets: Int,
+  relativeError: Double = 0.0001,
+  partial: 
+  	PartialFunction[Double, Option[String]] = Map.empty)
+  (implicit sqlContext: SQLContext): 
+Array[Double] = {
+	
+  import sqlContext.implicits._
+
+  val percentiles = (for(i <- 1 to (buckets - 1)) yield (1.0 / buckets) * i).toArray
+  val notDefined = data.filter(x => !partial.isDefinedAt(x))
+
+  try {
+    notDefined.toDF("col").stat.approxQuantile("col", percentiles, relativeError)
+  } catch{
+    case ex: java.util.NoSuchElementException => Array[Double]()
+  }
+}
+\end{lstlisting}
+\end{minipage}  
+
+The method $getQuantiles$ takes as an its input $data$, an $RDD$ containing the values to be discretized; $buckets$, the number of bins to create; $relativeError$, the maximum relative error that is allowed when approximating the break points of the percentiles; $partial$, a partial function that is used to filter out values that should not be taken into account when approximating the percentiles. The method uses Spark $DataFrame$ API to approximate the percentiles. Using a $relativeError$ parameter larger than 0, makes the generation of the association rules non deterministic, since the approximated percentile break points are allowed to vary from the exact value. However, calculating exact values for the breakpoints (by setting the $relativeError$ parameter to zero) slows down the generation of the association rules considerably, as all of the data needs to be processed in order to calculate the break points as opposed to calculating the break points from a sampled dataset.
+
+Having computed the quantiles of a continuously valued variable, discretization can be achieved by using the following method
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=scala] 
+def getFeatureFromQuantiles(
+	dataPoint: Double,
+	featureName: String,
+	quantiles: Array[Double],
+	partial: PartialFunction[Double, Option[String]] = Map.empty
+): Option[String] = {
+	if(partial.isDefinedAt(dataPoint))
+		return partial(dataPoint).map { x => 
+			s"${featureName}=${x}"
+		}
+	
+	var index = quantiles.indexWhere(q => q >= dataPoint) + 1	
+	if (index == 0) index += (quantiles.length + 1)
+	Some(s"${featureName}=q${index}")
+}  
+\end{lstlisting}
+\end{minipage}  
+
+The method \textit{getFeaturesFromQuantiles} takes as its input \textit{dataPoint}, a single point of data to be discretized; \textit{featureName}, the name of the feature; \textit{quantiles}, the quantile break points for the variable and \textit{partial} a partial function that is used both to filter out invalid data as well as to bypass the discretization altogether.
+
+As a concrete example, let us examine how one could go about discretizing variable \textit{screen}, which gives the screen brightness of the mobile device. As discussed in chapter~\ref{carat data screen}, the variable takes values between -1 and 255, where value -1 signifies a special case, where the screen brightness is automatically adapted to the brightness of the surroundings of the device. One could encode these preconditions to a partial function of the following form:
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=scala] 
+val screenPartial: PartialFunction[Double, Option[String]] = {
+    case x if x == -1 => Some("auto")
+    case x if x < -1 => None
+	case x if x > 255 => None
+}
+\end{lstlisting}
+\end{minipage} 
+Using this partial function in conjunction with the methods \textit{getQuantiles} and \textit{getFeatureFromQuantiles} for each data point will give the discretized form of the variable \textit{screen}. 
+
+To summarise: in order to discretize a variable such as \textit{screen}, which is assumed to be a collection of type \textit{RDD[Double]}, one could fist calculate the quantiles of data using the method \textit{getFeatureFromQuantiles}. One must then define a partial function, such as the one mentioned above, that filters out invalid data points and handles values with special significance. Finally, the method \textit{getFeatureFromQuantiles} could be applied to each data point of the collection using the partial function and the quantiles.
+
+Having ediscretized all the variables of the dataset, using the procedure discussed above, one ends up with one array of strings for each sample, which is represented in Spark by type \textit{RDD[Array[String]]}. To generate the association rules from these discrete features, MLlib, a machine learning library for Spark was used. The library implements a parallel FPGrowth algorithm for this purpose. The FPGrowth implementation has a limitation however, in that it can only generate rules with single consequent. The limitation is not terribly severe for the purpose of this thesis, as the main interest lies in finding out which variables affect the battery usage. Therefore being limited to rules which have as their sole consequent a feature extracted from the energy rate variable, should be sufficient. The following snippet of code illustrates how to generate association rules using the MLlib API.
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=scala] 
+val fpg = new FPGrowth()
+		  .setMinSupport(minSupport)
+			  
+val model = fpg.run(features)
+
+val rulesFiltered = model.generateAssociationRules(minConfidence)
+  .filter { rule =>
+    rule.consequent.find { item =>
+	  item.startsWith("rate=")
+	}.isDefined
+  }
+\end{lstlisting}
+\end{minipage}       
 
 From usability perspective, generating the association rules should be fast enough not to hinder interactive use, which implies that the rule generation should not take more than a couple of seconds. However, heavily optimizing the analysis engine is outside the scope of this thesis. In practice, the implementation described here achieves run times of a couple of minutes with a rather modest dataset size of 16 gigabytes.
 
