@@ -31,6 +31,44 @@ Figure~\ref{figure:carat-api-network-prototype} shows the flow of control betwee
 
 \subsection{Service Back End}
 
+The service back end is a simple web server implemented in Scala programming language using Scalatra web framework version 2.4.0. The webserver listens for HTTP GET requests, accepting application name, minimum support, minimum confidence and a list variable names to be excluded in the requests URL parameters. Once a valid GET request is received, the server creates a Spark job script based on the request parameters, and submits the Spark job to the analysis engine. The shell script which submits the Spark job is executed in a thread pool asynchronously to avoid making the web server unresponsive while a Spark job is running. Once the analysis engine has successfully executed the job, the shell script prints the association rules in JSON format to its standard output stream. This output is captured and returned as a HTTP response to the client.
+
+The server consists of merely two components, one servlet and one service. The servlet is used route HTTP request and is implemented is Scalatra as follows
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=scala]
+class MainServlet extends ScalatraServlet with FutureSupport with JacksonJsonSupport {
+
+  val conf = ConfigFactory.load()
+  override val asyncTimeout = conf.getInt("timeout") seconds
+  protected implicit lazy val jsonFormats: Formats = DefaultFormats
+  implicit val executor = ExecutionContext.global
+  
+  before() {
+    contentType = formats("json")
+  }
+	
+  get("/") {
+    val applicationName = Try(params("applicationName")).toOption
+	val minSupport = Try(params("minSupport").toDouble).toOption
+	val minConfidence = Try(params("minConfidence").toDouble).toOption
+    val excluded = Try(params("excluded")).toOption.getOrElse("")
+
+    applicationName.map { applicationName =>
+      SparkRunner.runSpark(
+        applicationName,
+        minSupport = minSupport,
+        minConfidence = minConfidence,
+        excluded = excluded
+      )
+    }.getOrElse {
+      BadRequest(reason = "Missing 'applicationName'")
+    }
+  }
+}
+\end{lstlisting}
+\end{minipage}  
+
 \subsection{Analysis Engine}
 
 \begin{wrapfigure}{r}{0.35\textwidth}
@@ -181,7 +219,46 @@ val rulesFiltered = model.generateAssociationRules(minConfidence)
 \end{lstlisting}
 \end{minipage}       
 
-From usability perspective, generating the association rules should be fast enough not to hinder interactive use, which implies that the rule generation should not take more than a couple of seconds. However, heavily optimizing the analysis engine is outside the scope of this thesis. In practice, the implementation described here achieves run times of a couple of minutes with a rather modest dataset size of 16 gigabytes.
+The final stage of association rule generation workflow is filtering out redundant rules. To demonstrate what is meant by redundancy in this context, let us consider two rules such as    
+
+\begin{equation}
+	\left\{ A, B \right\}  \Rightarrow  \left\{ X \right\} \label{rule:1}
+\end{equation}
+
+\begin{equation}
+\left\{ A, B, C \right\}  \Rightarrow  \left\{ X \right\} \label{rule:2}
+\end{equation}
+
+Additionally, let us assume that both rules \eqref{rule:1} and \eqref{rule:2} have equivalent confidence. Since both rules predict the same consequents and the antecedents of rule \eqref{rule:1} is a subset of the antecedents of rule \eqref{rule:2}, one can conclude that the rule \eqref{rule:1} is the more general of the two rules, as adding item \textit{C} to the antecedents of rule \eqref{rule:1} does not improve the associative power of the original rule. Since the objective of this thesis is to identify variables which have the strongest association with the battery consumption of a mobile application, we consider rule \eqref{rule:2} redundant in the context of this thesis work.
+
+More generally, given a set \textit{S} of association rules, we consider rule $R \in S$ redundant if there exists a rule $r \in S$, such that $R \neq r$ and $r.antedecents \subset R.antedecents$. The following excerpt of code shows how this definition translates to a redundancy filtering algorithm in Scala programming language
+    
+    \begin{minipage}{\linewidth}
+\begin{lstlisting}[language=scala] 
+def pruneRules(rules: RDD[Rule[String]]): RDD[Rule[String]] = {
+  val pruneCandidateGroups = rules.groupBy{ rule => 
+    (rule.consequent.sorted.mkString, rule.confidence) 
+  }
+
+  pruneCandidateGroups.flatMap { case (key, group) =>
+    val groupSorted = group.toSeq.sortBy(rule => rule.consequent.length)
+    var groupAsSets = group.map(rule => (rule, rule.antecedent.toSet))
+
+    val toPrune: Set[Rule[String]] = (for {
+      testRule <- groupAsSets
+      otherRule <- groupAsSets
+      if testRule != otherRule && testRule._2.subsetOf(otherRule._2)
+    } yield(otherRule._1)).toSet
+    
+    groupSorted.filter(rule => !toPrune.contains(rule))
+  }
+}
+\end{lstlisting}
+\end{minipage}       
+
+Method \textit{pruneRules} takes a collection of association rules and returns a collection of association rules which contains no redundant rules.
+
+This concludes the analysis engine part of the implementation. From usability perspective, generating the association rules should be fast enough not to hinder interactive use, which implies that the rule generation should not take more than a couple of seconds. However, heavily optimizing the analysis engine falls outside the scope of this thesis. In practice, the implementation described here achieves run times of a couple of minutes with a rather modest dataset size of 16 gigabytes. In practice, 
 
 
    
