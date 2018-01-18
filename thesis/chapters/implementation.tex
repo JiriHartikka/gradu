@@ -33,7 +33,18 @@ Figure~\ref{figure:carat-api-network-prototype} shows the flow of control betwee
 
 The service back end is a simple web server implemented in Scala programming language using Scalatra web framework version 2.4.0. The webserver listens for HTTP GET requests, accepting application name, minimum support, minimum confidence and a list variable names to be excluded in the requests URL parameters. Once a valid GET request is received, the server creates a Spark job script based on the request parameters, and submits the Spark job to the analysis engine. The shell script which submits the Spark job is executed in a thread pool asynchronously to avoid making the web server unresponsive while a Spark job is running. Once the analysis engine has successfully executed the job, the shell script prints the association rules in JSON format to its standard output stream. This output is captured and returned as a HTTP response to the client.
 
-The server consists of merely two components, one servlet and one service. The servlet is used route HTTP request and is implemented is Scalatra as follows
+The server consists of merely three components, a servlet, a service and a bootstrap component. The bootstrap components purpose in Scalatra is to mount services to certain URL paths. The bootstrap component simply mounts our servlet to match with any path, as denoted by asterisk character 
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=scala]
+class ScalatraBootstrap extends LifeCycle {
+  override def init(context: ServletContext) {
+    context.mount(new MainServlet, "/*")
+  }
+}
+\end{lstlisting}
+\end{minipage}   
+
+A servlet is a server component that routes incoming requests to associated controller routines. The servlet in question is implemented is Scalatra as follows
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language=scala]
@@ -68,6 +79,10 @@ class MainServlet extends ScalatraServlet with FutureSupport with JacksonJsonSup
 }
 \end{lstlisting}
 \end{minipage}  
+
+The traits \textit{FutureSupport} and \textit{JacksonJsonSupport} indicate, that the response is computed asynchronously and is JSON formatted. The method call to \textit{get("/")} registers a controller routine to the root path of the servlet. The controller routine, which is given as a call-by-name function to the second parameter list of the \textit{get} call, parses URL parameters from the incoming HTTP request and submits a new task to the \textit{SparkRunner} service. In case the \textit{applicationName} is missing from the request, a \textit{BadRequest} HTTP response is produced, otherwise the service method \textit{runSpark} is executed asynchronously and a response will be sent once the analysis engine has accomplished its analysis. For example, suppose that the server is running on localhost and listening on port 8888. Upon receiving a GET request to an URI such as \textit{localhost:8888?applicationName=com.facebook.katana\&minConfidence=0.9}, the servlet would route the request to the controller routine configured under \textit{get("/")}. The routine would parse the URI parameters \textit{applicationName} and \textit{minConfidence} and dispatch a Spark job to the analysis engine by invoking \textit{SparkRunner.runSpark}.  
+
+
 
 \subsection{Analysis Engine}
 
