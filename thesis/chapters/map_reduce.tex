@@ -22,4 +22,36 @@ as it merely returns the results of the computation performed by transformations
 
 and it works conceptually by applying the binary operator \textit{f} iteratively to elements of the RDD until there is only one element left. The order and pairing of the elements is not specified to allow parallel computation and thus the operator needs to be commutative and associative in order to guarantee deterministic results. 
 
+Let us look at a simple example to illustrate the usage of Spark. Suppose we have a text file where each line contains a decimal number and we wish to calculate the sum of all positive numbers in the file. The following Scala program implements this idea.  
 
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=scala] 
+object SumNumbers {
+
+  def initSpark(): SparkSession = {
+    val sparkMaster = Properties
+      .envOrNone("SPARK_MASTER").get
+
+    SparkSession.builder()
+      .appName("SumNumbers")
+      .master(sparkMaster)
+      .getOrCreate()
+  }
+
+  def main(args: Array[String]) {
+    val session = initSpark()
+    val sc = session.sparkContext
+
+    val numbers: RDD[Double] = sc
+      .textFile(args(0))
+      .map(_.toDouble)
+    val positive: RDD[Double] = numbers
+      .filter( _ >= 0)
+    val sum: Double = positive.reduce(_ + _)
+    println(s"Sum of positive numbers is ${sum}")
+  }
+}        
+\end{lstlisting}
+\end{minipage}
+
+Explicit type annotations are included at lines 17, 20 and 22 to clarify the execution context of values \textit{numbers}, \textit{positive} and \textit{sum}. The value \textit{numbers} as well as value \textit{positive} describe transformations applied to an RDD of strings, created at lines 17 and 18 by calling $sc.textFile(args(0))$. This reads the text file given as the first command line parameter to the program and creates an RDD whose elements are the lines in the text file. In line 19, the RDD of strings is converted to an RDD of double precision floating point values by applying method $toDouble$ to each element. In lines 20 to 21, the RDD of doubles is further transformed by calling \textit{filter(\_ >= 0)}. The filter function, as explained above, applies a predicate to the RDD returning a new RDD containing only the elements whose value is greater than or equal to zero. Finally, at line 22, the call to action \textit{positive.reduce} causes the computation defined by the RDD objects to materialize and calculates the sum of elements of RDD \textit{positive}. Readers who are not familiar with Scala programming language might find expressions such as $\_.toDouble$ and $\_ + \_$ slightly confusing. These expressions are merely syntactic sugar for expressing anonymous functions and can be written equivalently as $x => x.toDouble$ and $(x, y) => x + y$ respectively.

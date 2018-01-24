@@ -248,7 +248,7 @@ Additionally, let us assume that both rules \eqref{rule:1} and \eqref{rule:2} ha
 
 More generally, given a set \textit{S} of association rules, we consider rule $R \in S$ redundant if there exists a rule $r \in S$, such that $R \neq r$ and $r.antedecents \subset R.antedecents$. The following excerpt of code shows how this definition translates to a redundancy filtering algorithm in Scala programming language
     
-    \begin{minipage}{\linewidth}
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[language=scala] 
 def pruneRules(rules: RDD[Rule[String]]): RDD[Rule[String]] = {
   val pruneCandidateGroups = rules.groupBy{ rule => 
@@ -273,7 +273,7 @@ def pruneRules(rules: RDD[Rule[String]]): RDD[Rule[String]] = {
 
 Method \textit{pruneRules} takes a collection of association rules and returns a collection of association rules which contains no redundant rules.
 
-This concludes the analysis engine part of the implementation. From usability perspective, generating the association rules should be fast enough not to hinder interactive use, which implies that the rule generation should not take more than a couple of seconds. However, heavily optimizing the analysis engine falls outside the scope of this thesis. In practice, the implementation described here achieves run times of a couple of minutes with a rather modest dataset size of 16 gigabytes. In practice, 
+This concludes the analysis engine part of the implementation. From usability perspective, generating the association rules should be fast enough not to hinder interactive use, which implies that the rule generation should not take more than a couple of seconds. However, heavily optimizing the analysis engine falls outside the scope of this thesis. In practice, the implementation described here achieves run times of a couple of minutes with a rather modest dataset size of 16 gigabytes.
 
 
    
