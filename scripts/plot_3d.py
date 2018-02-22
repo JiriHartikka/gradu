@@ -77,32 +77,27 @@ def plot_num_rules(samples):
     ax.set_zlabel('Number of rules')
 
     X, Y =  support, confidence
-    #X, Y = np.meshgrid(support, confidence)
     Z = np.array(num_rules)
     Z = np.log10(num_rules)
 
     plot_plane(ax, zip(X, Y, Z))
 
-    #ax.zaxis._set_scale('log')
-    #ax.set_zscale('log')
-
     ax.w_zaxis.set_major_locator(LinearLocator(10))
-    #ax.w_zaxis.set_major_formatter(FormatStrFormatter('10^%.1f'))
     ax.w_zaxis.set_major_formatter(FormatStrFormatter(r'$10^{%.1f}$'))
 
     ax.scatter(X, Y, Z)
-
-    #ax.plot_wireframe(X, Y, Z)
-
-    #surf = ax.plot_surface(
-    #    X, Y, Z,
-    #    cmap=cm.coolwarm,
-    #    linewidth=0, antialiased=False
-    #)
-
-    #fig.colorbar(surf, shrink=0.5, aspect=5)
     plt.show()
 
+def plot_num_rules_with_error_bars(sample_sets):
+    support = []
+    confidence = []
+    num_rules_avg = []
+    num_rules_min = []
+    num_rules_max = []
+    
+    
+    
+    
 def plot_runtime(samples):
     support = []
     confidence = []
@@ -122,17 +117,10 @@ def plot_runtime(samples):
 
     X, Y =  support, confidence
     Z = np.array(runtime)
-    #Z = np.log10(runtime)
 
     plot_plane(ax, zip(X, Y, Z))
-
-    #ax.w_zaxis.set_major_locator(LinearLocator(10))
-    #ax.w_zaxis.set_major_formatter(FormatStrFormatter('10^%.0f'))
-
     ax.scatter(X, Y, Z)
-    
-    plt.show()
-    
+    plt.show()    
     
     
 def main(data_dir):
