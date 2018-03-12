@@ -27,8 +27,13 @@ In~\cite{PELTONEN201671}, the authors describe a way to model a mobile device's 
 
     
 
-\subsection{Mobile Device Data Analysis}
- * System Settings and Variables
+%\subsection{Mobile Device Data Analysis}
+% * System Settings and Variables
 
 \subsection{Association Analysis}
 
+Association analysis is a data mining method developed to find common patterns from large databases. The method was famously conceived to find common patterns in shopping cart content databases in order for the supermarkets to optimize the layout of their stores~\cite{Agrawal:1993:MAR:170036.170072}. Since then, the method has been applied to a wide variety of data mining problems.
+
+In~\cite{KARABATAK20093465}, association rule generation and a neural network were used to train an expert system for detecting breast cancer. The input data of the expert system consisted of nine variables describing the clump and a cell specimen of the suspected cancer tissue. The authors used the apriori algorithm to discover association rules between the input variables. These rules were then used for feature extraction and dimension reduction of the input data. Extracted features were then used as the training data for a multilayer perceptron which was used to classify the tumors to either malignant or benign class. After 3-fold cross validation on a database of 699 records, one combination of association rule assisted feature extraction and neural network achieved a correct classification rate of 97.4\% whereas a network which used the original nine variables as input only achieved a correct classification rate of 95.2\%.
+
+In~\cite{KARABATAK201132}, association analysis was used to classify textures. In this study, images of textures were transformed using a wavelet transformation. Each pixel was then mapped to range 0 to 2 based on the pixel value of the waveform transformed pixels. The transactions were then generated using a 3x3 sliding window, essentially concatenating the nine pixels in the sliding window. Apriori algorithm was used to generate frequent item sets from the transactions. The frequent item sets and their related support values were then used to characterize the texture from which the transaction database was generated. In order to classify an unseen texture image, they generated the frequent item sets and related support values and used a shortest distance classifier to label the new image to one of the texture classes. Their training and testing data consisted of 500 texture images of size 128 x 128. The images were gray scale representations of 10 classes of textures, such as bark, plastic bubbles and brick wall. In the test, the classifier had a success rate of 97\%. 
