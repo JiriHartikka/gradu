@@ -95,7 +95,7 @@ Frequent pattern growth is an efficient algorithm for the frequent pattern minin
 	\KwData{A transaction database \textit{DB}, minimum support threshold \textit{s}}
 	\KwResult{FP-tree for the database}
 	\SetKwProg{myalg}{Algorithm}{}{}
-	\myalg{\buildFPTree{}}{
+	\myalg{\buildFPTree{\textit{DB}, \textit{s}}}{
 		\nl	\textit{F} $\leftarrow$ Scan \textit{DB} and collect a map of items and their frequencies\;
 		\nl \textit{L} $\leftarrow$ Sort keys of \textit{F} in descending order of support filtering out items which have support < \textit{s}\;
 		\nl \textit{T} $\leftarrow$ root node of the FP-tree\;
@@ -182,4 +182,49 @@ Repeating the same procedure for the rest of the transactions yields complete FP
 
 The dashed arrows in Figure~\ref{figure:fp-growth-example3} represent node links. The FP-tree maintains a table of linked lists for each distinctly named item. Whenever a node is added to the FP-tree, a pointer to that node is also added to the linked list corresponding to that nodes label.
 
-The way an FP-tree is constructed guarantees, that all FP-trees have the so called \textit{node-link property}~\cite{Hipp:2000:AAR:360402.360421}. What it means, is that for any frequent item, all frequent patterns containing that item can be constructed by following the item's node-links starting from the item's head in the FP-tree header.  
+\begin{figure}[!htbp]
+	\centering
+	\includegraphics[scale=0.5]{fp-tree-example/fp-tree-conditional.png}
+	\caption{Conditional FP-tree of item d.}
+	\label{figure:fp-tree-conditional}
+\end{figure}
+
+
+The way an FP-tree is constructed guarantees, that all FP-trees have the so called \textit{node-link property}~\cite{Hipp:2000:AAR:360402.360421}. What it means, is that for any frequent item, all frequent patterns containing that item can be constructed by following the item's node-links starting from the item's head in the FP-tree header. Let us consider the FP-tree in Figure~\ref{figure:fp-growth-example3}. Starting from the bottom of the node links, we examine which frequent patterns can be extracted by following the node link. For item "d", we can trivially extract a frequent pattern "d:3". In addition, we have to consider the three prefix paths of "d" which are accessible from the node links of item "d": (c:5, e:4, h:3, a:1, b:1, d:1), (c:5, e:4, h:3, d:1) and (d:1). These three paths form the \textit{conditional pattern base}~\cite{Hipp:2000:AAR:360402.360421} of "d". To extract all frequent patterns containing item "d", we start by substituting all the item counts in each of the prefix paths in the conditional pattern base of "d" with the count of "d" in the prefix path. This is done to account for the fact that on each of the prefix paths of "d", the other items appear together with "d" exactly as many times as "d" itself. We also leave out the element "d" itself. We now get the transformed conditional pattern base (c:1, e:1, h:1, a:1, b:1), (c:1, e:1, h:1). The next step towards the frequent patterns containing "d", is to construct a \textit{conditional FP-tree} of "d"~\cite{Hipp:2000:AAR:360402.360421}. The construction of the conditional FP-tree conforms to the same set of rules as a normal FP-tree. The only difference is that a prefix path in the conditional pattern base, such as (x:n, y:n, z:n) should be interpreted as \textit{n} distinct transactions containing the items x, y and z. Figure~\ref{figure:fp-tree-conditional} shows the conditional FP-tree of item d constructed from the transformed conditional pattern base. Since there is only a single path in the conditional FP-tree, one can generate all the remaining frequent patterns containing item d by taking all combinations of items c, e, h and concatenating them with d. Each such pattern has support equal to the minimum support among the items in the combination. In this case, we would get frequent patterns \{cd:2, ed:2, hd:2, ced:2, chd:2, ehd:2, cehd:2\} in addition to the trivial pattern d:3. But what would happen if the conditional FP-tree contained multiple paths? In this case one would recursively construct a new conditional FP-tree for the item Whose node link yields multiple paths. Following this procedure for each node link in the original FP-tree, one can generate all the frequent patterns.  
+
+\begin{algorithm}[!htbp]
+\SetAlgoLined\DontPrintSemicolon
+	\SetKwFunction{FPGrowth}{FPGrowth}\SetKwFunction{patternGrowth}{patternGrowth}
+	\KwData{\textit{FP-tree} constructed using Algorithm~\ref{Algorithm:FP-tree}, minimum support threshold \textit{s}}
+	\KwResult{All frequent patterns of the database}
+	\SetKwProg{myalg}{Algorithm}{}{}
+	\myalg{\FPGrowth{\textit{FP-tree, \textit{s}}}}{
+		\nl	patternGrowth(\textit{FP-tree}, \textit{null})
+	}
+	\setcounter{AlgoLine}{0}
+	\SetKwProg{myproc}{Procedure}{}{}
+  	\myproc{\patternGrowth{\textit{tree}, \textit{sub-pattern}}}{
+		\nl \If{\textit{tree} contains only single path \textit{P}}{
+			\nl \For{ each combination \textit{C} of items in \textit{P}}{ 
+				\nl generate frequent pattern $\textit{C} \cup \textit{sub-pattern}$ with support = minimum support of items in \textit{C} \;
+			}
+		} \nl \Else{
+				\nl \For{ each node in the header of \textit{tree} }{ 
+					\nl \textit{C}  $\leftarrow$ pattern $\textit{node.item} \cup \textit{sub-pattern}$ with support = \textit{node}.support  \;
+					\nl generate pattern \textit{C} with support = \textit{node}.support \;
+					\nl \textit{B} $\leftarrow$ construct conditional pattern base of \textit{C} constrained by minimum support threshold \textit{s} \;
+					\nl \textit{T} $\leftarrow$ construct the conditional FP-tree of \textit{C} from \textit{B} constrained by minimum support threshold \textit{s} \;
+					\nl \If{\textit{T} is non-empty}{
+						\nl patternGrowth(\textit{T}, \textit{C}) \;
+					}
+				}
+			}
+	}	
+	\caption{Fp-growth}
+	\label{Algorithm:FP-growth}
+\end{algorithm}
+
+Formalizing the method discussed above yields Algorithm~\ref{Algorithm:FP-growth}~\cite{Hipp:2000:AAR:360402.360421}. The algorithm \textit{FPGrowth} takes as its arguments an FP-tree and a minimum support threshold. In line 1 of the algorithm, a procedure \textit{patternGrowth} is called with the FP-tree and an empty sub-pattern denoted by value \textit{null}. The procedure \textit{patternGrowth} has two parameters. The first parameter is a conditional FP-tree and the second parameter is the sub-pattern for which the conditional FP-tree was built. Initially, the procedure will be called with the whole FP-tree and empty sub-pattern. The algorithm will recursively simplify the conditional FP-tree until the tree only contains a single branch, from which the frequent patterns can be easily generated. In line 1, the procedure checks if the conditional FP-tree only has one branch. If so, the frequent patterns of the conditional FP-tree are outputted in lines 2-3 after which the procedure is finished. If the conditional FP-tree had more than one branch, we go to line 5, where we start to iterate over all nodes reachable from the conditional FP-tree's header's node-links. In line 6, we create a new pattern by appending the node's item to the current sub-pattern. The pattern is stored to variable \textit{C}. The new pattern's support is set to be equal to the support of the node that is being iterated. In line 7, the pattern \textit{C} is appended to the output of the program. In lines 8-9, a conditional FP-tree of pattern \textit{C} is constructed and stored in variable \textit{T}. In lines 10-11 we recursively call \textit{patternGrowth} with the newly constructed conditional FP-tree \textit{T} and pattern \textit{C}. After line 11, we exit the iteration loop and the procedure is finished.           
+
+\subsection{Generating Association Rules from Frequent Patterns}
+
