@@ -198,7 +198,7 @@ The way an FP-tree is constructed guarantees, that all FP-trees have the so call
 	\KwData{\textit{FP-tree} constructed using Algorithm~\ref{Algorithm:FP-tree}, minimum support threshold \textit{s}}
 	\KwResult{All frequent patterns of the database}
 	\SetKwProg{myalg}{Algorithm}{}{}
-	\myalg{\FPGrowth{\textit{FP-tree, \textit{s}}}}{
+	\myalg{\FPGrowth{\textit{FP-tree}, \textit{s}}}{
 		\nl	patternGrowth(\textit{FP-tree}, \textit{null})
 	}
 	\setcounter{AlgoLine}{0}
@@ -228,3 +228,49 @@ Formalizing the method discussed above yields Algorithm~\ref{Algorithm:FP-growth
 
 \subsection{Generating Association Rules from Frequent Patterns}
 
+The frequent patterns may reveal some interesting structures in the transaction database, as they effectively capture frequent co-occurrence of various items. Although this may be enough for some application domains, it is often the case that one would ultimately want to reveal some causal relationships between items or sets of items in the database. The association rules offer a rudimentary but fairly scalable solution for discovering "if X then Y" type of relationships between subsets of items in the frequent patterns. It should be noted here, that the field of causal inference expands far beyond scope of this thesis work and the association rules should at best be considered as candidates for causal relationships, not as proofs of such.
+
+Given a set of frequent patterns \textit{F}, and a minimum confidence threshold \textit{c}, the task of generating the association rules can be accomplished by the following method: 
+%Iterate through each set of items \textit{I} in \textit{F}. Iterate over each non-empty subset \textit{A} of \textit{I}. If $conf(A \Rightarrow I \setminus A ) \geq \textit{c}$ then output rule $A \Rightarrow I \setminus A$.
+
+\begin{enumerate}
+	\item For each set of items \textit{I} in \textit{F}
+	\begin{enumerate}
+		\item For each non-empty subset \textit{A} of \textit{I}
+		\begin{enumerate}
+			\item If $conf(A \Rightarrow I \setminus A ) \geq \textit{c}$ then output rule $A \Rightarrow I \setminus A$
+		\end{enumerate}
+	\end{enumerate}
+\end{enumerate}      
+
+While the proposed method does work when the size of the frequent patterns is small, this approach quickly becomes infeasible as the length of the patters grow. Given a frequent pattern \textit{I} with $\mid\textit{I}\mid$ items, there are a total of $2^{\mid\textit{I}\mid}$ subsets of which $2^{\mid\textit{I}\mid} - 2$ need to be tested as the set \textit{I} itself and the empty set can be discounted. Fortunately, a technique exists for pruning the search space, as described in~\cite{Agrawal:1994:FAM:645920.672836}. The confidence measure has the anti-monotone property, meaning that for any frequent pattern $I = \{A, B, C, D\}$ the following inequality holds:
+
+\[ conf(ABC \Rightarrow D) \geq conf(AB \Rightarrow CD) \geq conf(A \Rightarrow BCD) \] 
+
+\begin{algorithm}[!htbp]
+\SetAlgoLined\DontPrintSemicolon
+	\SetKwFunction{generateRules}{generateRules}
+	\KwData{A set of frequent patterns \textit{F}, a minimum confidence threshold \textit{c}}
+	\KwResult{Association rules discovered from the frequent patterns}
+	\SetKwProg{myalg}{Algorithm}{}{}
+	\myalg{\generateRules{\textit{F}, \textit{c}}}{
+		\nl \For{each frequent pattern \textit{P}}{ 
+			\nl \textit{C} $\leftarrow$ candidate rule generator of \textit{P} ordered by increasing length of candidate rule's consequent set length \;
+			\nl \While{\textit{C} has more candidate rules}{ 
+				\nl \textit{r} $\leftarrow$ get next candidate rule from \textit{C} \;
+				\nl \If{ $conf(\textit{r}) \geq \textit{c}$ }{
+					\nl output \textit{r} \;
+				}
+				\nl \Else{
+					\nl Remove all candidates rules \textit{r'} from \textit{C} where $r.consequents \subset r'.consequents$ \;
+				}
+			}		
+		}
+	}	
+	\caption{Generating association rules from frequent patterns}
+	\label{Algorithm:generate-association-rules}
+\end{algorithm}
+
+Since moving items from the antecedent set to the consequent set never increases the confidence of the rule, one can potentially prune an enormous amount of candidate rules by iterating the candidate rules in ascending order of length of the candidate rule's consequent set~\cite{Agrawal:1994:FAM:645920.672836}. After each iteration, if the candidate rule being processed did not have high enough confidence, then all remaining candidate rules whose consequent set contains a subset of the current candidate rules consequent set, can be pruned since the anti-monotone property guarantees that any such rule has confidence no higher than the current candidate rule. 
+
+Algorithm~\ref{Algorithm:generate-association-rules} gives an outline on how to generate association rules from frequent patterns with search tree pruning. The details of how to generate the combinations of items and how implement the pruning of the search space are not presented here. The algorithm takes a set of frequent patterns and a minimum confidence threshold as its arguments and returns the set of association rules discovered from the frequent patterns. In line 1 we start to iterate over the frequent patterns. In line 2 we initialize the candidate rule generator storing it to variable \textit{C}. In line 3, we enter a while loop which is terminated when generator \textit{C} has no more candidate rules to generate. In line 4 we store the next candidate rule from \textit{C} to variable \textit{r}. In lines 5-6, we test if the confidence of candidate rule \textit{r} is greater or equal to the minimum confidence threshold and output the rule if the criteria is met. If the confidence criteria was not met, we prune the candidate rule space of generator \textit{C} in lines 7-8.        
