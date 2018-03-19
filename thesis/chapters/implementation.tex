@@ -27,7 +27,45 @@ The implementation consists of three main components. These are the front end we
 
 Figure~\ref{figure:carat-api-network-prototype} shows the flow of control between the different components of the Carat API. The prototype only implements the frontend and the backend of the service. Implementing load balancing and authentication falls outside the scope of this thesis. Some implementation constraints of the authentication module are discussed in~\cite{7840871}.     
 
-\subsection{Service Front End}
+\subsection{Service Front End} 
+
+The service front end is implemented using a simple web server written in Scala programming language using Scalatra web framework version 2.4.0 and using Javascript programming language to create the interactive content in the web based graphical user interface. Figure~\ref{figure:frontend-overview} shows to graphical user interface of the service. Initially, a search form will be displayed to the user, containing three input fields for specifying the name of the application to be analysed, the minimum support threshold and the minimum confidence threshold. Additionally, the form contains a check box for each variable to be excluded from the association rule generation. 
+
+\begin{figure}[!htbp]
+	\centering
+	\includegraphics[width=\textwidth]{images/frontend/frontend_overview.png}
+	\caption{Overview of the graphical user interface of the front end}
+	\label{figure:frontend-overview}
+\end{figure} 
+
+The first input field accepts the name of the application. The input field was constructed using selectize.js, a Javascript library for creating searchable drop down lists. As the user starts typing the name of the application in the input field a list of matching application names will be displayed under the input field. By clicking an application name in the list, the user can select the application of interest. To enable this functionality, the application will fetch a list of all available application  when the web page loads using an AJAX request to the web server. Figure~\ref{figure:frontend-selectize} shows how the searching and selecting of applications by name works in practise. In this imaginary scenario, the user is searching applications whose name includes the string "spot". The user is then given a list of options from which to choose. Application names such as "com.spotify.music", "fr.pb.blogspot.com" and "ekawas.blogspot" will be displayed as each of them contain the substring "spot". The matching sections of the names are highlighted in light blue color.    
+
+\begin{figure}[!htbp]
+	\centering
+	\includegraphics[width=\textwidth]{images/frontend/frontend_selectize.png}
+	\caption{Searching and selecting applications by name}
+	\label{figure:frontend-selectize}
+\end{figure} 
+
+The second and third input fields allow the user to specify the minimum support threshold and the minimum confidence threshold respectively, for the association rule generation. Above above each of these two input fields are icons with question marks. These icons, when hovered over, will display an explanation about the variable in question. This functionality is illustrated in Figure~\ref{figure:frontend-icon-pop-over} for the minimum support threshold. The icon for minimum confidence threshold functions similarly. 
+
+Finally, the form contains a check box for each variable that is included in the association analysis. By checking any of these check boxes, the user can exclude a variable from the analysis. 
+
+\begin{figure}[!htbp]
+	\centering
+	\includegraphics[width=\textwidth]{images/frontend/frontend_helper_icons.png}
+	\caption{Helper icon pop over explaining the meaning of minimum support threshold}
+	\label{figure:frontend-icon-pop-over}
+\end{figure}
+
+Once the user initiates the analysis by pressing the submit button, labelled with "Generate Association Rules", a spinner element is displayed to tell the user that analysis is in process. Once the analysis is complete and the back end returns the analysis results, the spinner element will be removed and the generated rules will be displayed underneath the search form. The rule list is organized in tabs, one for each percentile of the energy rate variable. By clicking on a tab, the rules in which the corresponding energy rate is a consequent, will be displayed. The way the rules are rendered is a simple HTML table, where rules are presented in rows. The first column of the table lists the antecedents of a rule, the second column displays the consequent of a rule and the third column displays the confidence score of a rule. Figure~\ref{figure:frontend-example-rule-list} shows an example of generated rules for the com.facebook.katana mobile application using a minimum support threshold of 0.0001 and a minimum confidence threshold of 0.75. The displayed rules are sorted in an ascending order of confidence to display the most significant rules first.      
+
+\begin{figure}[!htbp]
+	\centering
+	\includegraphics[width=\textwidth]{images/frontend/frontend_rule_list.png}
+	\caption{Example of generated  association rules for the com.facebook.katana mobile application. A minimum support threshold of 0.0001 and a confidence threshold of 0.75 was used.}
+	\label{figure:frontend-example-rule-list}
+\end{figure}
 
 \subsection{Service Back End}
 
