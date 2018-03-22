@@ -47,7 +47,7 @@ The first input field accepts the name of the application. The input field was c
 	\label{figure:frontend-selectize}
 \end{figure} 
 
-The second and third input fields allow the user to specify the minimum support threshold and the minimum confidence threshold respectively, for the association rule generation. Above above each of these two input fields are icons with question marks. These icons, when hovered over, will display an explanation about the variable in question. This functionality is illustrated in Figure~\ref{figure:frontend-icon-pop-over} for the minimum support threshold. The icon for minimum confidence threshold functions similarly. 
+The second and third input field allow the user to specify the minimum support threshold and the minimum confidence threshold respectively, for the association rule generation. Above each of these two input fields are icons with question marks. These icons, when hovered over, will display an explanation about the variable in question. This functionality is illustrated in Figure~\ref{figure:frontend-icon-pop-over} for the minimum support threshold. The icon for minimum confidence threshold functions similarly. 
 
 Finally, the form contains a check box for each variable that is included in the association analysis. By checking any of these check boxes, the user can exclude a variable from the analysis. 
 
@@ -125,7 +125,8 @@ The traits \textit{FutureSupport} and \textit{JacksonJsonSupport} indicate, that
 \subsection{Analysis Engine}
 
 \begin{wrapfigure}{r}{0.35\textwidth}
-	\vspace{-110pt}
+	%\vspace{-110pt}
+	\vspace{-78pt}
 	\begin{center}
 		\includegraphics[width=0.3\textwidth]{images/analysis_engine_flow_graph.png}
 	\end{center}
@@ -254,7 +255,7 @@ Using this partial function in conjunction with the methods \textit{getQuantiles
 
 To summarise: in order to discretize a variable such as \textit{screen}, which is assumed to be a collection of type \textit{RDD[Double]}, one could fist calculate the quantiles of data using the method \textit{getFeatureFromQuantiles}. One must then define a partial function, such as the one mentioned above, that filters out invalid data points and handles values with special significance. Finally, the method \textit{getFeatureFromQuantiles} could be applied to each data point of the collection using the partial function and the quantiles.
 
-Having ediscretized all the variables of the dataset, using the procedure discussed above, one ends up with one array of strings for each sample, which is represented in Spark by type \textit{RDD[Array[String]]}. To generate the association rules from these discrete features, MLlib, a machine learning library for Spark was used. The library implements a parallel FPGrowth algorithm for this purpose. The FPGrowth implementation has a limitation however, in that it can only generate rules with single consequent. The limitation is not terribly severe for the purpose of this thesis, as the main interest lies in finding out which variables affect the battery usage. Therefore being limited to rules which have as their sole consequent a feature extracted from the energy rate variable, should be sufficient. The following snippet of code illustrates how to generate association rules using the MLlib API.
+Having ediscretized all the variables of the dataset, using the procedure discussed above, one ends up with one array of strings for each sample, which is represented in Spark by type \textit{RDD[Array[String]]}. To generate the association rules from these discrete features, MLlib, a machine learning library for Spark was used. The library implements a parallel FPGrowth algorithm~\cite{Li:2008:PPF:1454008.1454027} for this purpose. The FPGrowth implementation has a limitation however, in that it can only generate rules with single consequent. The limitation is not terribly severe for the purpose of this thesis, as the main interest lies in finding out which variables affect the battery usage. Therefore being limited to rules which have as their sole consequent a feature extracted from the energy rate variable, should be sufficient. The following snippet of code illustrates how to generate association rules using the MLlib API.
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language=scala] 

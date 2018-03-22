@@ -16,20 +16,47 @@ Let us consider a hypothetical dataset shown in table~\ref{table:raw-data}. The 
 	\label{table:raw-data}
 \end{table}
 
-Since association rule mining requires each variable of the database to be binary valued, a discretization of the variables must be performed. To discretize a continuously valued variable, we need to replace the continuous variable with multiple binary valued variables, each corresponding to an interval or cluster of values of the continuous variable. The details of discretization are discussed in chapter ???. For now, let us consider a naive discretization strategy, where each continuous variable is split to two binary variables by creating two bins at cut point 0.5. Table~\ref{table:discreteData} demonstrates this idea.
+Since association rule mining requires each variable of the database to be binary valued, a discretization of the variables must be performed. To discretize a continuously valued variable, we need to replace the continuous variable with multiple binary valued variables, each corresponding to an interval or cluster of values of the continuous variable. The details of discretization of Carat data were discussed in chapter~\ref{carat data}. For simplicity, let us consider a simple discretization strategy, where each continuous variable is split to two binary variables by creating two bins at cut point 0.5. Tables \ref{table:discreteData-1} and \ref{table:discreteData-2} demonstrates this idea.
+
+%\begin{table}[htb]
+%    \begin{tabular}{ | l | l | l | l | l | l | }
+%    \hline
+%    \textbf{energy=low} & \textbf{energy=high} & \textbf{CPU=low} & \textbf{CPU=high} & \textbf{screen=low} & \textbf{screen=high} \\ \hline
+%    True & False & False & True & True & False \\ \hline 
+%    False & True & True & False & False & True \\ \hline 
+%    False & True & False & True & False & True \\ \hline 
+%    False & True & False & True & False & True \\ \hline 
+%    \end{tabular}
+%	\caption{Hypothetical mobile device measurements after naive discretization}
+%	\label{table:discreteData}
+%\end{table}
 
 \begin{table}[htb]
-    \begin{tabular}{ | l | l | l | l | l | l | }
+    \begin{tabular}{ | l | l | l | }
     \hline
-    \textbf{energy=low} & \textbf{energy=high} & \textbf{CPU=low} & \textbf{CPU=high} & \textbf{screen=low} & \textbf{screen=high} \\ \hline
-    True & False & False & True & True & False \\ \hline 
-    False & True & True & False & False & True \\ \hline 
-    False & True & False & True & False & True \\ \hline 
-    False & True & False & True & False & True \\ \hline 
+    \textbf{energy=low} & \textbf{energy=high} & \textbf{CPU=low} \\ \hline
+    True & False & False  \\ \hline 
+    False & True & True  \\ \hline 
+    False & True & False  \\ \hline 
+    False & True & False  \\ \hline
     \end{tabular}
-	\caption{Hypothetical mobile device measurements after naive discretization}
-	\label{table:discreteData}
+	\caption{Hypothetical mobile device measurements after discretization using long notation. First half of the columns.}
+	\label{table:discreteData-1}
 \end{table}
+
+\begin{table}[htb]
+    \begin{tabular}{ | l | l | l | }
+    \hline
+    \textbf{CPU=high} & \textbf{screen=low} & \textbf{screen=high} \\ \hline
+	True & True & False \\ \hline
+	False & False & True \\ \hline    
+    True & False & True \\ \hline
+    True & False & True \\ \hline
+    \end{tabular}
+	\caption{Hypothetical mobile device measurements after discretization using long notation. Second half of the columns.}
+	\label{table:discreteData-2}
+\end{table}
+
 
 Since every group of variables that is created by discretization is mutually exclusive, a more concise notation for this dataset can be used, as shown in table~\ref{table:discreteDataConcise}.
 
