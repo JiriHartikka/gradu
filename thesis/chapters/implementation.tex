@@ -8,7 +8,7 @@ Association rules were selected as the basis of the API for two reasons. First, 
 
 As discussed in~\cite{7840871}, the intention of the Carat API is to allow application developers to retrieve information about their application by authenticating with their developer key. The prototype described here, does not include authentication of application developers, but rather demonstrates the functionality that the API could offer provided that an authentication has been successfully completed. 
 
-\begin{figure}[!htbp]
+\begin{figure} %[!htbp]
 	\centering
 	\includegraphics[width=\textwidth]{images/carat-prototype-architecture.png}
 	\caption{High level network architecture of the Carat API prototype}
@@ -31,7 +31,7 @@ Figure~\ref{figure:carat-api-network-prototype} shows the flow of control betwee
 
 The service front end is implemented using a simple web server written in Scala programming language using Scalatra web framework version 2.4.0 and using Javascript programming language to create the interactive content in the web based graphical user interface. Figure~\ref{figure:frontend-overview} shows to graphical user interface of the service. Initially, a search form will be displayed to the user, containing three input fields for specifying the name of the application to be analysed, the minimum support threshold and the minimum confidence threshold. Additionally, the form contains a check box for each variable to be excluded from the association rule generation. 
 
-\begin{figure}[!htbp]
+\begin{figure} %[!htbp]
 	\centering
 	\includegraphics[width=\textwidth]{images/frontend/frontend_overview.png}
 	\caption{Overview of the graphical user interface of the front end}
@@ -40,7 +40,7 @@ The service front end is implemented using a simple web server written in Scala 
 
 The first input field accepts the name of the application. The input field was constructed using selectize.js, a Javascript library for creating searchable drop down lists. As the user starts typing the name of the application in the input field a list of matching application names will be displayed under the input field. By clicking an application name in the list, the user can select the application of interest. To enable this functionality, the application will fetch a list of all available application  when the web page loads using an AJAX request to the web server. Figure~\ref{figure:frontend-selectize} shows how the searching and selecting of applications by name works in practise. In this imaginary scenario, the user is searching applications whose name includes the string "spot". The user is then given a list of options from which to choose. Application names such as "com.spotify.music", "fr.pb.blogspot.com" and "ekawas.blogspot" will be displayed as each of them contain the substring "spot". The matching sections of the names are highlighted in light blue color.    
 
-\begin{figure}[!htbp]
+\begin{figure} %[!htbp]
 	\centering
 	\includegraphics[width=\textwidth]{images/frontend/frontend_selectize.png}
 	\caption{Searching and selecting applications by name}
@@ -51,7 +51,7 @@ The second and third input field allow the user to specify the minimum support t
 
 Finally, the form contains a check box for each variable that is included in the association analysis. By checking any of these check boxes, the user can exclude a variable from the analysis. 
 
-\begin{figure}[!htbp]
+\begin{figure} %[!htbp]
 	\centering
 	\includegraphics[width=\textwidth]{images/frontend/frontend_helper_icons.png}
 	\caption{Helper icon pop over explaining the meaning of minimum support threshold}
@@ -60,10 +60,10 @@ Finally, the form contains a check box for each variable that is included in the
 
 Once the user initiates the analysis by pressing the submit button, labelled with "Generate Association Rules", a spinner element is displayed to tell the user that analysis is in process. Once the analysis is complete and the back end returns the analysis results, the spinner element will be removed and the generated rules will be displayed underneath the search form. The rule list is organized in tabs, one for each percentile of the energy rate variable. By clicking on a tab, the rules in which the corresponding energy rate is a consequent, will be displayed. The way the rules are rendered is a simple HTML table, where rules are presented in rows. The first column of the table lists the antecedents of a rule, the second column displays the consequent of a rule and the third column displays the confidence score of a rule. Figure~\ref{figure:frontend-example-rule-list} shows an example of generated rules for the com.facebook.katana mobile application using a minimum support threshold of 0.0001 and a minimum confidence threshold of 0.75. The displayed rules are sorted in an ascending order of confidence to display the most significant rules first.      
 
-\begin{figure}[!htbp]
+\begin{figure} %[!htbp]
 	\centering
-	\includegraphics[width=\textwidth]{images/frontend/frontend_rule_list.png}
-	\caption{Example of generated  association rules for the com.facebook.katana mobile application. A minimum support threshold of 0.0001 and a confidence threshold of 0.75 was used.}
+	\includegraphics[width=0.95\textwidth]{images/frontend/frontend_rule_list.png}
+	\caption{Example of generated  association rules for the Facebook mobile application. A minimum support threshold of 0.0001 and a confidence threshold of 0.75 was used.}
 	\label{figure:frontend-example-rule-list}
 \end{figure}
 
@@ -84,7 +84,7 @@ class ScalatraBootstrap extends LifeCycle {
 
 A servlet is a server component that routes incoming requests to associated controller routines. The servlet in question is implemented is Scalatra as follows
 
-\begin{minipage}{\linewidth}
+\begin{minipage}{0.95\linewidth}
 \begin{lstlisting}[language=scala]
 class MainServlet extends ScalatraServlet with FutureSupport with JacksonJsonSupport {
 
@@ -124,15 +124,23 @@ The traits \textit{FutureSupport} and \textit{JacksonJsonSupport} indicate, that
 
 \subsection{Analysis Engine}
 
-\begin{wrapfigure}{r}{0.35\textwidth}
-	%\vspace{-110pt}
-	\vspace{-78pt}
-	\begin{center}
-		\includegraphics[width=0.3\textwidth]{images/analysis_engine_flow_graph.png}
-	\end{center}
+%\begin{wrapfigure}{r}{0.35\textwidth}
+%	%\vspace{-110pt}
+%	\vspace{-78pt}
+%	\begin{center}
+%		\includegraphics[width=\textwidth]{images/analysis_engine_flow_graph_vertical.png}
+%	\end{center}
+%	\caption{Overview of the analysis engine pipeline}
+%	\label{figure:analysis-engine-flow-graph}
+%\end{wrapfigure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{images/analysis_engine_flow_graph_vertical.png}
 	\caption{Overview of the analysis engine pipeline}
 	\label{figure:analysis-engine-flow-graph}
-\end{wrapfigure}
+\end{figure}
+
 
 The primary function of the analysis engine is to generate association rules from the Carat data based on provided query parameters. The query parameters consist of application name, minimum confidence, minimum support and an optional list of attribute names which are to be excluded from the analysis. The application name is used to filter out all Carat energy rate samples in which the the application is not present. The minimum support and minimum confidence parameters affect the association rule generation as described in chapter~\ref{association analysis}. The excluded attributes list controls the association rule generation by completely ignoring all included attributes.    
 
@@ -147,7 +155,7 @@ Figure~\ref{figure:analysis-engine-flow-graph} describes the process of generati
 
 Reading Carat samples is very simple in Spark, as is evident from the following code snippet.  
 
-\begin{minipage}{\linewidth}
+\begin{minipage}{0.95\linewidth}
 \begin{lstlisting}[language=scala]
 def readCaratRates(sampleDir: String)(implicit sc: SparkContext): RDD[fi.helsinki.cs.nodes.carat.sample.Rate] = {
 	sc.objectFile[fi.helsinki.cs.nodes.carat.sample.Rate](s"${sampleDir}")
@@ -159,19 +167,20 @@ The $objectFile$ method of the $SparkContext$ object will read the dataset from 
 
 The next task that the analysis engine carry out, is to filter out all Carat rate samples where the requested application was not running. Using the $readCaratRates$ method, one can compose an expression which reads Carat rate data objects, filters out all rate objects that do not have the requested application running and transforms the resulting rate objects to a simplified object type of class $Sample$. 
 
-\begin{minipage}{\linewidth}
+\begin{minipage}{0.95\linewidth}
 \begin{lstlisting}[language=scala]
 val samples = readCaratRates(ratePath).collect {
 	case rate if rate.allApps().contains(applicationName) => 
 		Sample.fromCaratRate(rate)
 }
 \end{lstlisting}
-\end{minipage}  
-The $collect$ is a method defined for all instances of class $RDD[T]$ (where $T$ is a type parameter). It is analogous to the $collect$ method from Scala standard library, taking a partial function of signature $PartialFunction[T, U]$  (where $T$ and $U$ are type parameters) and returning a new instance of $RDD[U]$, containing the image of the $RDD[T]$ mapped by the partial function.
+\end{minipage}
+  
+$collect$ is a method defined for all instances of class $RDD[T]$ (where $T$ is a type parameter). It is analogous to the $collect$ method from Scala standard library, taking a partial function of signature $PartialFunction[T, U]$  (where $T$ and $U$ are type parameters) and returning a new instance of $RDD[U]$, containing the image of the $RDD[T]$ mapped by the partial function.
         
 The $Sample$ is a simple case class that merely stores all the relevant system settings. The case class also has a companion object, in which the method $fromCaratRate$ is defined. The method simply constructs a $Sample$ instance from a $Rate$ instance. 
 
-\begin{minipage}{\linewidth}
+\begin{minipage}{0.95\linewidth}
 \begin{lstlisting}[language=scala]
 case class Sample(
 	rate: Double,
@@ -190,7 +199,7 @@ case class Sample(
 
 The next step in the analysis work flow, is to discretize the variables of the data. All numerical variables were discretized to bins of equal mass, as explained in depth in chapter~\ref{carat data}. The following code snippet shows how to find the break points of the bins for continuously valued variables.
 
-\begin{minipage}{\linewidth}
+\begin{minipage}{0.95\linewidth}
 \begin{lstlisting}[language=scala] 
 def getQuantiles(
   data: RDD[Double],
@@ -219,7 +228,7 @@ The method $getQuantiles$ takes as an its input $data$, an $RDD$ containing the 
 
 Having computed the quantiles of a continuously valued variable, discretization can be achieved by using the following method
 
-\begin{minipage}{\linewidth}
+\begin{minipage}{0.95\linewidth}
 \begin{lstlisting}[language=scala] 
 def getFeatureFromQuantiles(
 	dataPoint: Double,
@@ -257,7 +266,7 @@ To summarise: in order to discretize a variable such as \textit{screen}, which i
 
 Having ediscretized all the variables of the dataset, using the procedure discussed above, one ends up with one array of strings for each sample, which is represented in Spark by type \textit{RDD[Array[String]]}. To generate the association rules from these discrete features, MLlib, a machine learning library for Spark was used. The library implements a parallel FPGrowth algorithm~\cite{Li:2008:PPF:1454008.1454027} for this purpose. The FPGrowth implementation has a limitation however, in that it can only generate rules with single consequent. The limitation is not terribly severe for the purpose of this thesis, as the main interest lies in finding out which variables affect the battery usage. Therefore being limited to rules which have as their sole consequent a feature extracted from the energy rate variable, should be sufficient. The following snippet of code illustrates how to generate association rules using the MLlib API.
 
-\begin{minipage}{\linewidth}
+\begin{minipage}{0.95\linewidth}
 \begin{lstlisting}[language=scala] 
 val fpg = new FPGrowth()
 		  .setMinSupport(minSupport)
@@ -287,7 +296,7 @@ Additionally, let us assume that both rules \eqref{rule:1} and \eqref{rule:2} ha
 
 More generally, given a set \textit{S} of association rules, we consider rule $R \in S$ redundant if there exists a rule $r \in S$, such that $R \neq r$ and $r.antedecents \subset R.antedecents$. The following excerpt of code shows how this definition translates to a redundancy filtering algorithm in Scala programming language
     
-\begin{minipage}{\linewidth}
+\begin{minipage}{0.95\linewidth}
 \begin{lstlisting}[language=scala] 
 def pruneRules(rules: RDD[Rule[String]]): RDD[Rule[String]] = {
   val pruneCandidateGroups = rules.groupBy{ rule => 

@@ -3,7 +3,7 @@
 Association rule mining is the task of finding associations between \textit{items} in a database of \textit{transactions}. The technique was originally developed in 1993 to identify patterns in consumers grocery purchasing behaviour. Since then however, association analysis has found applications in wide variety of domains.
 
 Let us consider a hypothetical dataset shown in table~\ref{table:raw-data}. The dataset consists of mobile device system settings and energy usage measurements. The dataset has three continuous valued variables:  energyRate, the rate at which the battery is discharging;  CPULevel, the device's CPU usage level and screenBrightness, the brightness of the device's screen. Each of these variables takes floating point values ranging from 0 to 1.
-\begin{table}[htb]
+\begin{table} %[htb]
     \begin{tabular}{ | l | l | l | }
     \hline
     \textbf{energyRate} & \textbf{CPULevel} & \textbf{screenBrightness} \\ \hline
@@ -31,7 +31,7 @@ Since association rule mining requires each variable of the database to be binar
 %	\label{table:discreteData}
 %\end{table}
 
-\begin{table}[htb]
+\begin{table} %[htb]
     \begin{tabular}{ | l | l | l | }
     \hline
     \textbf{energy=low} & \textbf{energy=high} & \textbf{CPU=low} \\ \hline
@@ -44,7 +44,7 @@ Since association rule mining requires each variable of the database to be binar
 	\label{table:discreteData-1}
 \end{table}
 
-\begin{table}[htb]
+\begin{table} %[htb]
     \begin{tabular}{ | l | l | l | }
     \hline
     \textbf{CPU=high} & \textbf{screen=low} & \textbf{screen=high} \\ \hline
@@ -58,9 +58,9 @@ Since association rule mining requires each variable of the database to be binar
 \end{table}
 
 
-Since every group of variables that is created by discretization is mutually exclusive, a more concise notation for this dataset can be used, as shown in table~\ref{table:discreteDataConcise}.
+Since every group of variables that is created by discretization is mutually exclusive, a more concise notation for this dataset can be used, as shown in Table~\ref{table:discreteDataConcise}.
 
-\begin{table}[htb]
+\begin{table} %[htb]
     \begin{tabular}{ | l | l | l |}
     \hline
 	\textbf{energyRate} & \textbf{CPULevel} & \textbf{screenBrightness} \\ \hline
@@ -112,7 +112,8 @@ The problem of association rule discovery can now be formalized the following wa
 
 The association rule discovery problem can be further divided into two distinct sub problems, namely frequent pattern mining problem and rule generation problem. A frequent pattern $P$ of database $T$ is a subset of $I$ such that $supp(P) \geq s$. The frequent pattern mining problem is the task of finding all frequent patterns from a given database. The rule generation problem on the other hand, is the task of generating all association rules with sufficient confidence from the frequent patterns. 
 
-\subsection{Frequent Pattern Mining Using Frequent Pattern Growth}
+%\subsection{Frequent Pattern Mining Using Frequent Pattern Growth}
+\subsection[Frequent Pattern Mining Using Frequent Pattern Growth]{Frequent Pattern Mining Using Frequent\\ Pattern Growth}
 
 Frequent pattern growth is an efficient algorithm for the frequent pattern mining problem~\cite{Han:2000:MFP:335191.335372}. The algorithm utilizes a specialized data structure called FP-tree, a kind of prefix tree, to speed up the frequent pattern generation. The FP-tree data structure consists of nodes, each of which have tree fields: item name, item count and node link. The item name tells which item the node represents. The item count signifies the number of transactions containing the item, that can be reached by following the path of nodes in the FP-tree leading to this node. The node link contains a pointer to the next node in the FP-tree with the same node name. An exception to this format is the root node of the FP-tree, which does not have any of these fields, but only has links to child nodes. Algorithm~\ref{Algorithm:FP-tree} shows how to constructs a FP-tree for a transaction database~\cite{Han:2000:MFP:335191.335372}.
 
@@ -163,7 +164,7 @@ To better illustrate the process of building an FP-tree from a transaction datab
 
 For this example, let us consider a minimum support of 0.3. Since the number of transactions in our database is 6 and $ \frac{1}{6} < 0.3 < \frac{2}{6} $, all items with frequency less than 2 can be filtered out. Thus items i and j are not included in the second column of table~\ref{table:fp-growth-example1}. 
 
-\begin{table}[!htbp]
+\begin{table} %[!htbp]
 \begin{center}
     \begin{tabular}{ | l | l | }
     \hline
@@ -182,7 +183,7 @@ For this example, let us consider a minimum support of 0.3. Since the number of 
 
 To construct the FP-tree we start with a node labelled as "root". We then take the first transaction and walk over its elements in the frequency order. We start from the root node of the FP-tree. Since the roo node has no child nodes, we add a child node labelled with "c" and set its count to 1. We remove the item "c" from the transaction being handled. Then we continue the walk from the node labelled with "c". The procedure is repeated with the remaining items of the transaction, continuing the walk from the node labelled "c". The FP-tree after processing the first transaction is shown in Figure~\ref{figure:fp-growth-example1}.
 
-\begin{figure}[!htbp]
+\begin{figure} %[!htbp]
 	\centering
 	\includegraphics[scale=0.5]{fp-tree-example/fp-tree-p1.png}
 	\caption{FP-tree after processing the first transaction}
@@ -191,7 +192,7 @@ To construct the FP-tree we start with a node labelled as "root". We then take t
 
 Next, the second transaction is processed as follows. We again start walking down FP-tree from the root node processing items in the second transaction. Since the root node has a child node labelled with "c" we increment its count to 2 and remove item "c" from the transaction being processed. Since the node has a child node labelled with "e" and our next item to be processed is "e", we move to the node labelled with "e" and increment its count by one and remove item "e" from the transaction being processed. The same process is applied to item "h" and the node labelled with "h". The next item to process is "d", but the node labelled with "h" does not have a child node labelled with "d". We therefore add a child node labelled with "d" and count 1 to the node labelled with "h". Figure~\ref{figure:fp-growth-example2} shows the progress after processing the second transaction of the database.
 
-\begin{figure}[!htbp]
+\begin{figure} %[!htbp]
 	\centering
 	\includegraphics[scale=0.5]{fp-tree-example/fp-tree-p2.png}
 	\caption{FP-tree after processing the second transaction}
@@ -200,7 +201,7 @@ Next, the second transaction is processed as follows. We again start walking dow
 
 Repeating the same procedure for the rest of the transactions yields complete FP-tree as illustrated in Figure~\ref{figure:fp-growth-example3}.
 
-\begin{figure}[!htbp]
+\begin{figure} %[!htbp]
 	\centering
 	\includegraphics[scale=0.5]{fp-tree-example/fp-tree-p3.png}
 	\caption{Complete FP-tree}
@@ -209,7 +210,7 @@ Repeating the same procedure for the rest of the transactions yields complete FP
 
 The dashed arrows in Figure~\ref{figure:fp-growth-example3} represent node links. The FP-tree maintains a table of linked lists for each distinctly named item. Whenever a node is added to the FP-tree, a pointer to that node is also added to the linked list corresponding to that nodes label.
 
-\begin{figure}[!htbp]
+\begin{figure} %[!htbp]
 	\centering
 	\includegraphics[scale=0.5]{fp-tree-example/fp-tree-conditional.png}
 	\caption{Conditional FP-tree of item d.}
@@ -270,7 +271,7 @@ Given a set of frequent patterns \textit{F}, and a minimum confidence threshold 
 	\end{enumerate}
 \end{enumerate}      
 
-While the proposed method does work when the size of the frequent patterns is small, this approach quickly becomes infeasible as the length of the patters grow. Given a frequent pattern \textit{I} with $\mid\textit{I}\mid$ items, there are a total of $2^{\mid\textit{I}\mid}$ subsets of which $2^{\mid\textit{I}\mid} - 2$ need to be tested as the set \textit{I} itself and the empty set can be discounted. Fortunately, a technique exists for pruning the search space, as described in~\cite{Agrawal:1994:FAM:645920.672836}. The confidence measure has the anti-monotone property, meaning that for any frequent pattern $I = \{A, B, C, D\}$ the following inequality holds:
+While the proposed method does work when the size of the frequent patterns is small, this approach quickly becomes infeasible as the length of the patters grow. Given a frequent pattern \textit{I} with $\mid\textit{I}\mid$ items, there are a total of $2^{\mid\textit{I}\mid}$ subsets of which $2^{\mid\textit{I}\mid} - 2$ need to be tested as the set \textit{I} itself and the empty set can be discounted. Fortunately, a technique exists for pruning the search space, as described by Agrawal et al.~\cite{Agrawal:1994:FAM:645920.672836}. The confidence measure has the anti-monotone property, meaning that for any frequent pattern $I = \{A, B, C, D\}$ the following inequality holds:
 
 \[ conf(ABC \Rightarrow D) \geq conf(AB \Rightarrow CD) \geq conf(A \Rightarrow BCD) \] 
 

@@ -17,11 +17,11 @@ We will now look at the results of this work in two parts. In the first part we 
 \begin{figure} %[htp]
 
 \subfloat[Number of rules with fitted plane]{
-  \includegraphics[width=\textwidth]{images/results/facebook_num_rules.png}%
+  \includegraphics[width=0.95\textwidth]{images/results/facebook_num_rules.png}%
 }
 
 \subfloat[Number of rules with error bars]{%
-  \includegraphics[width=\textwidth]{images/results/facebook_num_rules_with_error_bars.png}%
+  \includegraphics[width=0.95\textwidth]{images/results/facebook_num_rules_with_error_bars.png}%
 }
 
 \caption{Number of generated rules for Facebook measurements as a function of minimum support threshold and minimum confidence threshold}
@@ -45,11 +45,11 @@ Even though there is a stochastic component in the rule generation, which arises
 
 \begin{figure}[htp]
 \subfloat[Number of rules with fitted plane]{
-  \includegraphics[width=\textwidth]{images/results/spotify_num_rules.png}%
+  \includegraphics[width=0.95\textwidth]{images/results/spotify_num_rules.png}%
 }
 
 \subfloat[Number of rules with error bars]{%
-  \includegraphics[width=\textwidth]{images/results/spotify_num_rules_with_error_bars.png}%
+  \includegraphics[width=0.95\textwidth]{images/results/spotify_num_rules_with_error_bars.png}%
 }
 
 \caption{Number of generated rules for Spotify measurements as a function of minimum support threshold and minimum confidence threshold}
@@ -68,14 +68,14 @@ Even though there is a stochastic component in the rule generation, which arises
 %\label{figure:number-of-ruless}
 %\end{figure}
 
-\begin{figure}[htp]
+\begin{figure} %[htp]
 
 \subfloat[Rule generation time with best fitting plane]{
-  \includegraphics[width=\textwidth]{images/results/facebook_runtimes.png}%
+  \includegraphics[width=0.95\textwidth]{images/results/facebook_runtimes.png}%
 }
 
 \subfloat[Rule generation time with error bars]{%
-  \includegraphics[width=\textwidth]{images/results/facebook_runtimes_with_error_bars.png}%
+  \includegraphics[width=0.95\textwidth]{images/results/facebook_runtimes_with_error_bars.png}%
 }
 
 \caption{Rule generation time for Facebook measurements as a function of minimum support threshold and minimum confidence threshold}
@@ -86,14 +86,14 @@ In addition to the number of generated rules, another metric that is a good indi
 
 The rule generation time increases as either axis approaches zero. The deviance is not huge however, as all the measured run times fall between 160 and 260 seconds. While this is a notable difference from the users perspective, the system remains usable even when the number of generated rules is in the order of $10^5$.   
 
-\begin{figure}[htp]
+\begin{figure} %[htp]
 
 \subfloat[Rule generation time with best fitting plane]{
-  \includegraphics[width=\textwidth]{images/results/spotify_runtimes.png}%
+  \includegraphics[width=0.95\textwidth]{images/results/spotify_runtimes.png}%
 }
 
 \subfloat[Rule generation time with error bars]{%
-  \includegraphics[width=\textwidth]{images/results/spotify_runtimes_with_error_bars.png}%
+  \includegraphics[width=0.95\textwidth]{images/results/spotify_runtimes_with_error_bars.png}%
 }
 
 \caption{Rule generation time for Spotify measurements as a function of minimum support threshold and minimum confidence threshold}
@@ -116,7 +116,17 @@ All the experiments were conducted on a Spark cluster which had a single computi
 
 \subsection{Overview on Generated Rules}
 
-For this section, four popular Android applications were selected to be inspected with the rule generation. The selected applications were com.facebook.katana, com.google.android.chrome, com.google.android.apps.photos and com.spotify.music. To achieve comparable results, the minimum support threshold was fixed to 0.001 and the minimum confidence threshold was fixed to 0.5. Given that the least popular of these applications in the dataset used for this analysis contained little over 420 000 data points, a minimum support threshold of 0.001 means that for each generated rule, there should always be at least 420 data points supporting that rule. For each of these four applications, a total of six of the generated rules were selected for further inspection. These six rules were selected by taking the three most confident rules that predicted high energy consumption rate and the three most confident rules that predicted low energy consumption rate.  
+For this section, four popular Android applications were selected to be inspected with the rule generation. The selected applications were 
+
+\begin{itemize}
+	\item com.facebook.katana
+	\item com.google.android.chrome
+	\item com.google.android.apps.photos
+	\item com.spotify.music
+\end{itemize}
+
+%com.facebook.katana, com.google.android.chrome, com.google.android.apps.photos and com.spotify.music. 
+To achieve comparable results, the minimum support threshold was fixed to 0.001 and the minimum confidence threshold was fixed to 0.5. Given that the least popular of these applications in the dataset used for this analysis contained little over 420 000 data points, a minimum support threshold of 0.001 means that for each generated rule, there should always be at least 420 data points supporting that rule. For each of these four applications, a total of six of the generated rules were selected for further inspection. These six rules were selected by taking the three most confident rules that predicted high energy consumption rate and the three most confident rules that predicted low energy consumption rate.  
 
 Table~\ref{table:rules-facebook} shows the generated rules for the com.facebook.katana mobile application. Looking at the top three rules that predicted hight energy rate for the application, it seems that using HSDPA type mobile network connection and a high screen brightness were clearly connected to high energy consumption. When these two factors were combined with high battery temperature, we get the most confident of these three rules with a confidence score of 0.5811. As the highest confidence rule in this category had a confidence score of less than 0.6, one can say that there were no clear explanations of high energy consumption to be found by these variables for this particular application. Looking at the three most confident rules for low energy consumption, the common factors seem to be using WiFi connection, low battery temperature and low or medium low CPU usage. Notably, the rules for low energy consumption had significantly greater confidence than the rules for high energy consumption. The highest confidence for these three rules was 0.9985 while the lowest was 0.9964. 
 

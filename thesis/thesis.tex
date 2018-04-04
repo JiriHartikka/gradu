@@ -78,17 +78,28 @@
 \author{Jiri Hamberg}
 \date{\today}
 \level{Master's Thesis}
-\abstract{Abstract.}
+
+\abstract{
+This thesis presents a method for estimating mobile application energy consumption from mobile device system settings and context factors using association rules. These settings and factors include CPU usage, device travel distance, battery temperature, battery voltage, screen brightness, used mobile networking technology, network type, WiFi signal strength, and WiFi connection speed. The association rules are mined using Apache Spark cluster-computing framework from collaborative mobile data collected by the Carat project. 
+
+Additionally, this thesis presents a prototype of a web based API for discovering these association rules. The web service integrates Apache Spark based analysis engine with a user friendly front-end allowing an aggregated view of the dataset to be accessible without revealing data of individual participants of the Carat project.
+
+This thesis shows that association rules can be used effectively in modelling mobile device energy consumption. Example rules are presented and the performance of the implementation is evaluated experimentally. 
+  
+}
 
 % The following can be used to specify keywords and classification of the paper:
 
-\keywords{keyword 1, keyword 2, keyword 3}
+\keywords{Data Analysis, Data Mining, Mobile devices}
 
 % classification according to ACM Computing Classification System (http://www.acm.org/about/class/)
 % This is probably mostly relevant for computer scientists
 % uncomment the following; contents of \classification will be printed under the abstract with a title
 % "ACM Computing Classification System (CCS):"
-% \classification{}
+\classification{
+Information systems $\rightarrow$ Information systems applications $\rightarrow$ Data mining $\rightarrow$ Association rules\\
+Information systems $\rightarrow$ Information systems applications $\rightarrow$ Mobile information processing systems
+}
 
 % If the automatic page number counting is not working as desired in your case,
 % uncomment the following to manually set the number of pages displayed in the abstract page:
