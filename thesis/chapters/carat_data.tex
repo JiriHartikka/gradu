@@ -1,16 +1,16 @@
 \section{Carat Data} \label{carat data}
 
-The Carat data consists of samples containing mobile device system settings, current battery level, the list of currently running mobile applications and a user specific identification token unique to each Carat application installation. Each Carat application user periodically sends these samples to the Carat server, typically when the device's battery level changes~\cite{Oliner:2013:CCE:2517351.2517354}. 
+The Carat data consists of samples containing mobile device system settings and context factors, current battery level, the list of currently running mobile applications and a user specific identification token unique to each Carat application installation. Each Carat application user periodically sends these samples to the Carat server, typically when the device's battery level changes~\cite{Oliner:2013:CCE:2517351.2517354}. 
 
-Since we are interested about the effects that the mobile devices system settings and state may have on the energy consumption rate of the device, the samples need to be converted in such a way that the energy rate becomes accessible. This was done by grouping all samples according to their user identification token. The grouped tokens were then sorted according to the time of the samples arrival time stamp. These sorted samples were then paired up so that the first sample and the second sample make up pair number 1, the second and the third sample make up sample pair number 2 and so forth. These sample pairs were used as the basis of this analysis. The energy rate of a sample pair was calculated as the difference of the samples' battery levels divided by the difference of their time stamps. The set of running applications for a sample pair was decided to be the union of both samples running applications. For all other system settings and state the more recent sample of the pair was used to determine the state or settings of the sample pair.
+Since we are interested about the effects that the mobile devices system settings and context factors have on the energy consumption rate of the device, the samples need to be converted in such a way that the energy rate becomes accessible. This has been done by grouping all samples according to their user identification token. The grouped tokens are then sorted according to the time of the samples arrival time stamp. These sorted samples are then paired up so that the first sample and the second sample make up pair number 1, the second and the third sample make up sample pair number 2 and so forth. These sample pairs are used as the basis of this analysis. The energy rate of a sample pair is calculated as the difference of the samples' battery levels divided by the difference of their time stamps. The set of running applications for a sample pair is decided to be the union of both samples running applications. For all other system settings and context factors, the more recent sample of the pair is used to determine the context factors and system settings of the sample pair.
 
-Since the Carat data comes from a large number of unsupervised clients, there is no guarantee for the integrity of the data. A faulty device or a hostile client may produce erroneous data. It is therefore essential to apply filtering to the data to minimize the amount of erroneous data. 
+Since the Carat data comes from a large number of unsupervised clients, there is no guarantee for the integrity of the data. A faulty device or a hostile client may produce erroneous or tampered data. It is therefore essential to apply filtering to the data to minimize the effect that invalid data points have on further analysis. 
 
-Let us give a brief description of each of the system settings and state variables that were used as part of the analysis. Association analysis requires discrete data, as explained in chapter~\ref{association analysis}. Therefore we describe the way each of these variables is discretized. The following presentation of the data is based on a subset of the Carat data consisting of samples that were collected between 26.8.2016 and 3.10.2016 that had Facebook mobile application running. For increased uniformity and simplicity, the data set only contains samples from clients running Android operating system. 
+Let us give a brief description of each of the system settings and context factors that were used as part of the analysis. Association analysis requires discrete data, as explained in chapter~\ref{association analysis}. We therefore describe the way each of these variables is discretized. The following presentation of the data is based on a subset of the Carat data consisting of samples that were collected between 26.8.2016 and 3.10.2016 that had Facebook mobile application running. For increased uniformity and simplicity, the data set only contains samples from clients running Android operating system. 
 
 \subsection{Energy Rate}
 
-Energy rate of a mobile device is the velocity at which the mobile devices battery is discharging. The unit of the energy rate is percentage per second. This means that an energy rate of $\frac{0.05}{s}$ would drain the whole battery in just $\frac{100}{0.05 / s} = 2000 s \approx 33 minutes$.
+Energy rate of a mobile device is the velocity at which the mobile devices battery is discharging. The unit of the energy rate is percentage per second. This means that an energy rate of $\frac{0.05}{s}$ would drain the whole battery in just $\frac{100}{0.05 / s} = 2000 s \approx 33 minutes$. Any data points where the energy rate was negative, meaning the device's battery was recharging, were filtered out.
 
 \begin{figure} %[!htbp]
 	\centering
@@ -19,11 +19,11 @@ Energy rate of a mobile device is the velocity at which the mobile devices batte
 	\label{figure:carat-data-energy-rate}
 \end{figure}  
 
-Figure~\ref{figure:carat-data-energy-rate} shows a histogram of the energy rate distribution. The distribution appears to be a rough approximation of an exponential distribution. The distribution does not seem have an evident categorical division. Thus, the data was discretized by dividing it to four bins of equal frequency. 
+Figure~\ref{figure:carat-data-energy-rate} shows a histogram of the energy rate distribution. The distribution appears to be a rough approximation of an exponential distribution. The distribution does not seem have an evident categorical division. Thus, the data was discretized by dividing it to four bins of equal mass. 
 
 \subsection{CPU Usage Level} \label{carat data cpu} 
 
-CPU usage level is the fraction of time that the central processing unit(s) of the mobile device were busy when the sample was collected. The CPU usage level is in a unit of percentages of the maximum level. All CPU usage levels that were below zero or greater than 100 were discarded as faulty data.
+CPU usage level is the fraction of time that the central processing unit(s) of the mobile device were busy when the sample was collected. The CPU usage level is in a unit of percentages of the maximum level. All CPU usage levels that were below zero or greater than 1 were discarded as faulty data.
 
 \begin{figure} %[!htbp]
 	\centering
@@ -89,7 +89,7 @@ Screen brightness is system setting that takes integer values between -1 and 255
 	\label{figure:carat-data-screen-brightness}
 \end{figure}    
 
-Figure~\ref{figure:carat-data-screen-brightness} shows a histogram of the screen brightness values, where the values of -1 have been removed. The brightness values seem to roughly follow a uniform distribution, although very high screen brightness settings seem to be over represented. Approximately half of the samples had their brightness value at -1, indicating automatic brightness setting. Since the automatic setting is categorically different from all other brightness values, the brightness attribute was discretized in the following way: the value -1 formed it's own bin and the numerical values were divided to four bins of equal mass.   
+Figure~\ref{figure:carat-data-screen-brightness} shows a histogram of the screen brightness values, where the values of -1 have been removed. The brightness values seem to roughly follow a uniform distribution, although very high screen brightness settings seem to be over represented. Approximately half of the samples had their brightness value at -1, indicating automatic brightness setting. Since the automatic setting is categorically different from all other brightness values, the brightness attribute was discretized in the following way: the value -1 formed it's own bin labelled as "auto", while the other numerical values were divided to four bins of equal mass.   
 
 Increase in screen brightness has been shown to cause increased energy consumption in mobile devices~\cite{5375354, PELTONEN201671} while low and automatically adjusted screen brightness values lead to decrease in energy consumption. It is expected that this phenomena shows up in the association rules as well.
 
@@ -106,13 +106,13 @@ The mobile network technology is a system property that reports the name of the 
 
 Figure~\ref{figure:carat-data-mobile-net-type} shows a histogram of all mobile network types in the Carat data. Ambiguous categories of "16", "19", "30", "unknown", "null" and "18" were combined to a single bin labelled as "unknown". 
 
-Different mobile networking technologies have been shown to have varying energy consumption performance depending on the task~\cite{5357972}. Based on this observation, one would assume that different mobile network technologies should appear as antecedents for association rules predicting either high or low energy consumption depending on the network usage pattern of a mobile application.  
+Different mobile networking technologies have been shown to have varying energy consumption performance depending on the task~\cite{5357972}. Based on this observation, one would assume that different mobile network technologies should appear as antecedents for association rules predicting either high or low energy consumption depending on the network usage pattern of the mobile application.  
 
 %Intuitively, one would assume that older mobile network technologies such as \textit{gprs} would consume less battery life than newer technologies such as \textit{lte}, since the newer technologies achieve much greater data rates than the old technologies.
 
 \subsection{Network Type}  
 
-Network type is the system property that the is reported by the mobile device to indicate the type data connection. Typically this is either \textit{mobile} or \textit{wifi}, indicating the use of mobile networking or a wireless local area networking respectively. Some more exotic alternatives can however be found in the data, such as \textit{bluetooth tethering}, where the network access is enabled by bluetooth tunneling through another device.
+Network type is a system property that is reported by the mobile device to indicate the type of the data connection. Typically this is either \textit{mobile} or \textit{wifi}, indicating the use of mobile networking or a wireless local area networking respectively. Some more exotic alternatives can however be found in the data, such as \textit{bluetooth tethering}, where the network access is enabled by bluetooth tunneling through another device.
 
 \begin{figure} %[!htbp]
 	\centering
@@ -123,7 +123,7 @@ Network type is the system property that the is reported by the mobile device to
 
 Figure~\ref{figure:carat-data-net-type} shows a histogram of all network types found in the Carat data. Values \textit{null} and \textit{unknown} were considered ambiguous and were combined under the label \textit{unknown}.
  
-The choice of networking technology has been shown to affect the energy consumption of mobile devices~\cite{7146507, 6240745}. Generally, using WiFi network for downloading data is more energy efficient than using a mobile networking technology. Therefore a reasonable hypothesis is to expect to see association rules with mobile networking type as an antecedent for rules predicting high energy consumption, at least in case of applications that download a lot of data.  
+The choice of networking technology has been shown to affect the energy consumption of mobile devices~\cite{7146507, 6240745}. As a general rule, using WiFi network for downloading data is more energy efficient than using a mobile networking technology. Therefore a reasonable hypothesis is to expect to see association rules with mobile networking type as an antecedent for rules predicting high energy consumption, at least in case of applications that download a lot of data.  
 
 \subsection{WiFi Signal Strength}
 

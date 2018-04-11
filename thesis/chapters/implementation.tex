@@ -1,12 +1,12 @@
 \section{Implementation}
 
-This section discusses the implementation of the Carat developer API prototype. The API aims to provide mobile application developers the ability to discover how a client mobile device's system settings and state affect the energy consumption of the device.
+This section discusses the implementation of the Carat developer API prototype. The API aims to provide mobile application developers the ability to discover how a client mobile device system settings and context factors affect the energy consumption of the device.
 
-The design of such a service poses multiple challenges, as discussed in~\cite{7840871}. The dataset itself is large and incrementally changing as time passes, which makes static statistical analysis inconvenient. It is therefore practical to design the service in such a way that the analysis can be executed dynamically whenever the API is accessed. Another challenge is to protect the privacy of the participants of the Carat project.
+The design of a service like this poses multiple challenges, as discussed by Peltonen et al.~\cite{7840871}. The dataset itself is large and incrementally changing as time passes, which makes static statistical analysis inconvenient. It is therefore practical to design the service in such a way that the analysis can be executed dynamically whenever the API is accessed. Another challenge is to protect the privacy of the participants of the Carat project.
 
-Association rules were selected as the basis of the API for two reasons. First, the association rules effectively hide all the details about individual Carat users, protecting their privacy, while also enabling reasonably detailed view on how a devices system settings and state affect the energy consumption. Secondly, efficient parallel algorithms exist for generating association rules from huge datasets as discussed in detail in chapter~\ref{association analysis}.
+Association rules were selected as the basis of the API for a number of reasons. The association rules effectively hide all the details about individual Carat users, protecting their privacy, while also enabling reasonably detailed view on how a devices system settings and context factors affect the energy consumption. Association rule mining also allows convenient data processing, as discussed in Chapter~\ref{carat data}. Finally, efficient parallel algorithms exist for generating association rules from huge datasets as discussed in detail in Chapter~\ref{association analysis}.
 
-As discussed in~\cite{7840871}, the intention of the Carat API is to allow application developers to retrieve information about their application by authenticating with their developer key. The prototype described here, does not include authentication of application developers, but rather demonstrates the functionality that the API could offer provided that an authentication has been successfully completed. 
+As discussed by Peltonen et al.~\cite{7840871}, the intention of the Carat API is to allow application developers to retrieve information about their application by authenticating with their developer key. The prototype described here, does not include authentication of application developers, but rather demonstrates the functionality that the API could offer provided that an authentication has been successfully completed. 
 
 \begin{figure} %[!htbp]
 	\centering
@@ -19,13 +19,13 @@ The implementation consists of three main components. These are the front end we
 \begin{enumerate}
 	\item Client sends a HTTP request to the front end server. The request may contain parameters that control the way the association rules are generated.
 	\item Front end web server sends a HTTP request to the back end web server passing along the parameters from the client.
-	\item The back end web server dispatches a job to the analysis engine running on SPARK. Parameters provided by the client are used to control the analysis.
+	\item The back end web server dispatches a job to the analysis engine running on Spark-cluster. Parameters provided by the client are used to control the analysis.
 	\item Analysis engine sends generated association rules to the back end web server.
 	\item Back end server sends HTTP response containing the generated rules to the front end web server.
 	\item Front end server uses the association rules to generate a view for the client.  
 \end{enumerate}
 
-Figure~\ref{figure:carat-api-network-prototype} shows the flow of control between the different components of the Carat API. The prototype only implements the frontend and the backend of the service. Implementing load balancing and authentication falls outside the scope of this thesis. Some implementation constraints of the authentication module are discussed in~\cite{7840871}.     
+Figure~\ref{figure:carat-api-network-prototype} shows the flow of control between the different components of the Carat API. The prototype only implements the frontend and the backend of the service. Implementing load balancing and authentication falls outside the scope of this thesis. Some implementation constraints of the authentication module are discussed by Peltonen et al.~\cite{7840871}.     
 
 \subsection{Service Front End} 
 
@@ -38,7 +38,7 @@ The service front end is implemented using a simple web server written in Scala 
 	\label{figure:frontend-overview}
 \end{figure} 
 
-The first input field accepts the name of the application. The input field was constructed using selectize.js, a Javascript library for creating searchable drop down lists. As the user starts typing the name of the application in the input field a list of matching application names will be displayed under the input field. By clicking an application name in the list, the user can select the application of interest. To enable this functionality, the application will fetch a list of all available application  when the web page loads using an AJAX request to the web server. Figure~\ref{figure:frontend-selectize} shows how the searching and selecting of applications by name works in practise. In this imaginary scenario, the user is searching applications whose name includes the string "spot". The user is then given a list of options from which to choose. Application names such as "com.spotify.music", "fr.pb.blogspot.com" and "ekawas.blogspot" will be displayed as each of them contain the substring "spot". The matching sections of the names are highlighted in light blue color.    
+The first input field accepts the name of the application. The input field was constructed using selectize.js, a Javascript library for creating searchable drop down lists. As the user starts typing the name of the application in the input field a list of matching application names will be displayed under the input field. By clicking an application name in the list, the user can select the application of interest. To enable this functionality, the application will fetch a list of all available application  when the web page loads using an AJAX request to the web server. Figure~\ref{figure:frontend-selectize} shows how the searching and selecting of applications by name works in practise. In this imaginary scenario, the user is searching applications whose name includes the string "spot". The user is then given a list of options from which to choose. Application names such as "com.spotify.music", "fr.pb.freewifispot" and "ekawas.blogspot" will be displayed as each of them contain the substring "spot". The matching sections of the names are highlighted in light blue color.    
 
 \begin{figure} %[!htbp]
 	\centering
@@ -142,7 +142,7 @@ The traits \textit{FutureSupport} and \textit{JacksonJsonSupport} indicate, that
 \end{figure}
 
 
-The primary function of the analysis engine is to generate association rules from the Carat data based on provided query parameters. The query parameters consist of application name, minimum confidence, minimum support and an optional list of attribute names which are to be excluded from the analysis. The application name is used to filter out all Carat energy rate samples in which the the application is not present. The minimum support and minimum confidence parameters affect the association rule generation as described in chapter~\ref{association analysis}. The excluded attributes list controls the association rule generation by completely ignoring all included attributes.    
+The primary function of the analysis engine is to generate association rules from the Carat data based on provided query parameters. The query parameters consist of application name, minimum confidence, minimum support and an optional list of attribute names which are to be excluded from the analysis. The application name is used to filter out all Carat energy rate samples in which the the application is not present. The minimum support and minimum confidence parameters affect the association rule generation as described in Chapter~\ref{association analysis}. The excluded attributes list controls the association rule generation by completely ignoring all included attributes.    
 
 %\begin{figure}[!htbp]
 %	\centering
@@ -163,7 +163,7 @@ def readCaratRates(sampleDir: String)(implicit sc: SparkContext): RDD[fi.helsink
 \end{lstlisting}
 \end{minipage}
 
-The $objectFile$ method of the $SparkContext$ object will read the dataset from a given directory. The dataset is stored as an RDD (Resilient Distributed Dataset), that is serialized to the disk in a folder given by the $sampleDir$ parameter. RDD is is the data structure that Spark framework uses to store, access and transform distributed datasets. The Carat samples are initially read as instances of class $fi.helsinki.cs.nodes.carat.sample.Rate$. Each $Rate$ object contains two consecutive samples from a mobile device. From these samples, the system settings and running mobile applications can be extracted as described in chapter~\ref{carat data}  
+The $objectFile$ method of the $SparkContext$ object will read the dataset from a given directory. The dataset is stored as an RDD (Resilient Distributed Dataset), that is serialized to the disk in a folder given by the $sampleDir$ parameter. RDD is is the data structure that Spark framework uses to store, access and transform distributed datasets. The Carat samples are initially read as instances of class $fi.helsinki.cs.nodes.carat.sample.Rate$. Each $Rate$ object contains two consecutive samples from a mobile device. From these samples, the system settings and running mobile applications can be extracted as described in Chapter~\ref{carat data}  
 
 The next task that the analysis engine carry out, is to filter out all Carat rate samples where the requested application was not running. Using the $readCaratRates$ method, one can compose an expression which reads Carat rate data objects, filters out all rate objects that do not have the requested application running and transforms the resulting rate objects to a simplified object type of class $Sample$. 
 
@@ -197,7 +197,7 @@ case class Sample(
 \end{lstlisting}
 \end{minipage}  
 
-The next step in the analysis work flow, is to discretize the variables of the data. All numerical variables were discretized to bins of equal mass, as explained in depth in chapter~\ref{carat data}. The following code snippet shows how to find the break points of the bins for continuously valued variables.
+The next step in the analysis work flow, is to discretize the variables of the data. All numerical variables were discretized to bins of equal mass, as explained in depth in Chapter~\ref{carat data}. The following code snippet shows how to find the break points of the bins for continuously valued variables.
 
 \begin{minipage}{0.95\linewidth}
 \begin{lstlisting}[language=scala] 
@@ -250,7 +250,7 @@ def getFeatureFromQuantiles(
 
 The method \textit{getFeaturesFromQuantiles} takes as its input \textit{dataPoint}, a single point of data to be discretized; \textit{featureName}, the name of the feature; \textit{quantiles}, the quantile break points for the variable and \textit{partial} a partial function that is used both to filter out invalid data as well as to bypass the discretization altogether.
 
-As a concrete example, let us examine how one could go about discretizing variable \textit{screen}, which gives the screen brightness of the mobile device. As discussed in chapter~\ref{carat data screen}, the variable takes values between -1 and 255, where value -1 signifies a special case, where the screen brightness is automatically adapted to the brightness of the surroundings of the device. One could encode these preconditions to a partial function of the following form:
+As a concrete example, let us examine how one could go about discretizing variable \textit{screen}, which gives the screen brightness of the mobile device. As discussed in Chapter~\ref{carat data screen}, the variable takes values between -1 and 255, where value -1 signifies a special case, where the screen brightness is automatically adapted to the brightness of the surroundings of the device. One could encode these preconditions to a partial function of the following form:
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language=scala] 
 val screenPartial: PartialFunction[Double, Option[String]] = {
