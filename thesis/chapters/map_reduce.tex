@@ -24,7 +24,9 @@ as it merely returns the results of the computation performed by transformations
 
 and it works conceptually by applying the binary operator \textit{f} iteratively to elements of the RDD until there is only one element left. The order and pairing of the elements is not specified to allow parallel computation and thus the operator needs to be commutative and associative in order to guarantee deterministic results. 
 
-Let us look at a simple example to illustrate the usage of Spark. Suppose we have a text file where each line contains a decimal number and we wish to calculate the sum of all positive numbers in the file. The following Scala program implements this idea.  
+\subsection{Spark Usage}
+
+Let us look at a simple example to illustrate the usage of Spark. Suppose we have a text file where each line contains a decimal number and we wish to calculate the sum of all positive numbers in the file. The following Scala program implements this task.  
 
 \begin{minipage}{0.95\linewidth}
 \begin{lstlisting}[language=scala] 
