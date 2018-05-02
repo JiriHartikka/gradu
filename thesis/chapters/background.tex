@@ -6,9 +6,9 @@ Mobile devices are becoming increasingly common~\cite{ITUstats} all around the w
 
 Various approaches have been used for collecting and analysing data from mobile devices. Multiple applications have been proposed for collecting detailed logging information from a relatively small number of smart phone users~\cite{Ferreira:2014:CES:2628363.2628367, Falaki:2010:DSU:1814433.1814453, 5375354}. This kind of logging data can be utilized to find device and application usage patterns, to building statistical models that predict individual user's future behaviour, and to building regression models which accurately predict individual users energy consumption. 
 
-Large scale data collection and analysis platforms have also been proposed for studying mobile data. Wagner et al.~\cite{Wagner:2014:DAL:2627534.2627553} describe a mobile data collection system that has been used to collect usage information from 12500 Android mobile devices. The authors discuss challenges regarding privacy, security, transparency, and accountability of their data collection and analysis system. 
+Large scale data collection and analysis platforms have also been proposed for studying mobile data. Wagner et al.~\cite{Wagner:2014:DAL:2627534.2627553} describe a mobile data collection system that has been used to collect usage information from 12,500 Android mobile devices. The authors discuss challenges regarding privacy, security, transparency, and accountability of their data collection and analysis system. 
 
-Oliver et al.~\cite{Oliver:2010:CLS:1834616.1834623, Oliver_datadriven} have studied diurnal mobile device usage patterns and energy consumption patterns using a dataset collected from over 15000 BlackBerry mobile devices. The data consists of the devices backlight activity, the operating system's idle counter measurements, battery level and charging activity, device shut down events, and device type and operating system version.      
+Oliver et al.~\cite{Oliver:2010:CLS:1834616.1834623, Oliver_datadriven} have studied diurnal mobile device usage patterns and energy consumption patterns using a dataset collected from over 15,000 BlackBerry mobile devices. The data consists of the devices backlight activity, the operating system's idle counter measurements, battery level and charging activity, device shut down events, and device type and operating system version.      
 
 Oliner et al.~\cite{Oliner:2012:CED:2387858.2387864, Oliner:2013:CCE:2517351.2517354} have used mobile device system settings and context factors collected from over 500,000 devices to detect energy consumption anomalies in mobile applications. The analysis system called Carat collects samples containing list of currently running applications, level of battery life and other context factors and system settings from the users that have installed the Carat mobile application. These samples are sent to an analysis server which is implemented using Spark cluster-computing framework. The applications with anomalous energy consumption are labelled as energy hogs if they consume above average amount of energy on most users' systems. If an application only consumes more than average energy under specific circumstances, such as on a specific version of an operating system, then the anomaly is labelled as an energy bug. After analysing the samples collected from all users, the analysis server informs the Carat mobile application about discovered energy hogs and bugs. The mobile application can then notify the user about hogs or bugs affecting the user's system and even estimate the amount of battery life that could be saved by shutting off such applications.  
 
@@ -16,19 +16,18 @@ To detect an energy hog application, the authors estimate the reference battery 
 
 \subsection{Battery Life of Mobile Devices}
 
-As mobile devices become increasingly essential for our every day lives, the need for longer and longer battery lives increases. Despite the impact that mobile device battery life has on every day lives of hundreds of millions of people worldwide, the factors which affect a mobile device's battery life have not been studied extensively.
+As mobile devices become increasingly essential for our every day lives, the demand for longer battery lives is constantly increasing. Despite the impact that mobile device battery life has on every day lives of hundreds of millions of people worldwide, the factors which affect a mobile device's battery life have not been studied extensively.
 
-Mobile networking is an active area of research where mobile device energy consumption has an import role.. New mobile networking technologies are being developed constantly and providing faster, more reliable and more energy efficient mobile networking solutions for customers is a profitable business for the internet service providers of the world. Consequently, it is no surprise that funding and research efforts have gravitated towards the field.  
+Mobile networking is an active area of research where mobile device energy consumption has an import role. New mobile networking technologies are being developed constantly and providing faster, more reliable and more energy efficient mobile networking solutions for customers is a profitable business for the internet service providers of the world. Consequently, it is no surprise that funding and research efforts have gravitated towards the field.  
 
-As a concrete example of such research, the impact of using 2G and 3G networks for the mobile phone battery life has been compared by Perrucci et al.~\cite{5357972}. The authors used a Nokia N95 phone to test the relative battery consumption of various tasks comparing the results of using GMS, a 2G mobile networking technology and UMTS, a 3G mobile networking technology. The tasks for which the battery consumption was measured included 
+As a concrete example of such research, the impact of using 2G and 3G networks for the mobile phone battery life has been compared by Perrucci et al.~\cite{5357972}. The authors used a Nokia N95 phone to test the relative battery consumption of various tasks comparing the results of using GMS, a 2G mobile networking technology and UMTS, a 3G mobile networking technology. The tasks for which the battery consumption was measured included sending 50 SMS messages of 100 bytes, downloading 100 megabytes of data, and performing a 5 hour voice call.
+%\begin{itemize}
+%\item Sending 50 SMS messages of 100 bytes
+%\item Downloading 100 megabytes of data
+%\item Performing a 5 hour voice call 
+%\end{itemize} 
 
-\begin{itemize}
-\item Sending 50 SMS messages of 100 bytes
-\item Downloading 100 megabytes of data
-\item Performing a 5 hour voice call 
-\end{itemize} 
-
-The conclusion of the study is that different networking technologies are energy efficient in different tasks. While the UMTS network is much more energy efficient for downloading data, the GMS is more energy efficient when sending SMS messages or performing voice calls. The authors argue that this information could be used to minimize energy consumption of mobile phones when multiple networking technologies are available.       
+The conclusion of the study is that different networking technologies are energy efficient in different tasks. While the UMTS network is significantly more energy-efficient for downloading data, the GMS is more energy-efficient when sending SMS messages or performing voice calls. The authors argue that this information could be used to minimize energy consumption of mobile phones when multiple networking technologies are available.       
 
 Another perspective from which the mobile device energy consumption has been studied in recent years, is offloading or remote execution of programs. The idea of offloading is simple: since CPU intensive tasks tend to consume a lot of energy, computing tasks can be executed remotely in a dedicated server or cloud environment. However, transferring data to and from the offloading platform also consumes energy and imposes other constraints such as delay, connectivity, availability, security concerns and potential costs of using such a platform.
 
